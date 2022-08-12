@@ -1,0 +1,5 @@
+https://reactnative.dev/docs/environment-setup
+rtsp://192.168.1.70:554/Streaming/channels/101
+yarn global add @react-native-community/cli
+npx react-native init securitycam --template react-native-template-typescript --version 0.68.2
+https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/examples-rtsp.html
