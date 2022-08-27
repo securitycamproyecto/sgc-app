@@ -218,6 +218,12 @@ android {
         }
     }
     signingConfigs {
+        release {
+            storeFile file('securitycam.keystore')
+            storePassword '123456'
+            keyAlias 'securitycam'
+            keyPassword '123456'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
