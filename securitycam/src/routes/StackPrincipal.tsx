@@ -1,5 +1,3 @@
-// In App.js in a new project
-
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -14,6 +12,18 @@ import { SettingContext } from '../context/SettingContext';
 
 const Drawer = createDrawerNavigator();
 const SIZE_ICONS = 22;
+const drawerMenuItems = [
+  {name: 'Reports', title: 'Reportes', icon:'document', component: Reports},
+  {name: 'Monitoring', title: 'Monitoreo en Vivo', icon:'videocam', component: Monitoring},
+  {name: 'RegistrationPeople', title: 'Registro de Personas', icon:'person-add', component: RegistrationPeople,
+    list: [
+      { name: 'RegistrationPeople', title: 'Personas Autorizadas', icon:'happy', component: RegistrationPeople, params: {key: 1, authorize: true} },
+      { name: 'RegistrationPeople', title: 'Personas No Autorizadas', icon:'sad', component: RegistrationPeople, params: {key: 2, authorize: false} }
+    ]
+  },
+  {name: 'Recordings', title: 'Grabaciones', icon:'server', component: Recordings},
+  {name: 'Notifications', title: 'Notificaciones', icon:'notifications', component: Notifications}
+];
 
 const StackPrincipal = () => {
   const { settings } = React.useContext(SettingContext);
@@ -21,50 +31,22 @@ const StackPrincipal = () => {
     <NavigationContainer>
       <Drawer.Navigator
         initialRouteName="Monitoring"
-        drawerContent={props => <CustomDrawer {...props}/>}
+        drawerContent={props => <CustomDrawer {...props} drawerMenuItems={drawerMenuItems}/>}
         screenOptions={{
-          drawerActiveBackgroundColor: '#ff9900',
-          drawerActiveTintColor: '#fff',
-          drawerInactiveTintColor: '#333',
-          drawerLabelStyle: {
-            marginLeft: -15,
-            fontSize: 15,
-            fontFamily: 'Roboto-Medium'
-          },
           headerTitle: settings.headerTitle,
           headerShown: settings.headerShown
         }}
       >
-        <Drawer.Screen name="Reports" component={Reports}
-          options={{
-            title: 'Reportes',
-            drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name="document" color={color}/>
-          }}
-        />
-        <Drawer.Screen name="Monitoring" component={Monitoring}
-          options={{
-            title: 'Monitoreo en Vivo',
-            drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name="videocam" color={color}/>
-          }}
-        />
-        <Drawer.Screen name="RegistrationPeople" component={RegistrationPeople}
-          options={{
-            title: 'Registro de Personas',
-            drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name="person-add" color={color}/>
-          }}
-        />
-        <Drawer.Screen name="Recordings" component={Recordings}
-          options={{
-            title: 'Grabaciones',
-            drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name="server" color={color}/>
-          }}
-        />
-        <Drawer.Screen name="Notifications" component={Notifications}
-          options={{
-            title: 'Notificaciones',
-            drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name="notifications" color={color}/>
-          }}
-        />
+        {
+          drawerMenuItems.map((item) =>
+            <Drawer.Screen name={item.name} component={item.component}
+              options={{
+                title: item.title,
+                drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>
+              }}
+            />
+          )
+        }
       </Drawer.Navigator>
     </NavigationContainer>
   );

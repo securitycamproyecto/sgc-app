@@ -1,6 +1,7 @@
+/* eslint-disable react-native/no-inline-styles */
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import React, { useState } from 'react';
+import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Auth } from 'aws-amplify';
 
@@ -12,6 +13,56 @@ const signOut = async () => {
   }
 };
 
+const SIZE_ICONS = 22;
+interface ITemplateListWithChildren {
+  icon: string;
+  title: string;
+  state: any;
+  navigation: any;
+  list: {
+    title: string;
+    icon: string;
+    name: string;
+    component: string;
+    params: any;
+  }[];
+}
+
+function TemplateListWithChildren(props: ITemplateListWithChildren){
+  const [showList, setShowList] = useState(false);
+  const selected = props.state.routes[props.state.index];
+  return (
+    <View style={{...stylesListWithChildren.view, marginBottom: showList ? -12 : 0}}>
+      <TouchableOpacity onPress={() => setShowList(!showList)}>
+          <View style={{...stylesBottom.itemList, marginBottom: showList ? 5 : 0}}>
+            <Ionicons name={props.icon} size={SIZE_ICONS} style={stylesBottom.itemIcon}/>
+            <Text style={{...stylesBottom.itemText, ...stylesListWithChildren.text}}>
+              {props.title}
+            </Text>
+            <Ionicons size={18} name={showList ? 'chevron-up-outline' : 'chevron-down-outline'} style={stylesListWithChildren.iconLeft}/>
+          </View>
+          {
+            showList &&
+              props.list?.map((item, index) =>
+                <DrawerItem
+                  key={index}
+                  label={item.title}
+                  focused={selected.name === item.name && selected.params.key === item.params.key}
+                  onPress={() => props.navigation.navigate(item.name, item.params)}
+                  icon={({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>}
+                  activeTintColor="#fff"
+                  activeBackgroundColor="#ff9900"
+                  inactiveTintColor="#333"
+                  style={{marginLeft: 0, marginVertical: 5, padding: 0}}
+                  labelStyle={{marginLeft: -8}}
+                />
+              )
+          }
+        </TouchableOpacity>
+    </View>
+  );
+}
+
 const CustomDrawer = (props:any) => {
   return (
     <View style={styles.view}>
@@ -21,7 +72,32 @@ const CustomDrawer = (props:any) => {
           <Text style={styles.textTitle}>Security IA</Text>
           <Text style={styles.textDescription}>Monitoreo para el hogar</Text>
         </View>
-        <DrawerItemList {...props} />
+        {
+          props.drawerMenuItems?.map((item:any, index:number) => (
+            item.list ? (
+              <TemplateListWithChildren
+                icon={item.icon}
+                title={item.title}
+                key={index}
+                state={props.state}
+                navigation={props.navigation}
+                list={item.list}
+              />
+            ) : (
+              <DrawerItem
+                key={index}
+                label={item.title}
+                focused={props.state.routes[props.state.index].name === item.name}
+                onPress={() => props.navigation.navigate(item.name)}
+                icon={({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>}
+                activeTintColor="#fff"
+                activeBackgroundColor="#ff9900"
+                inactiveTintColor="#333"
+                labelStyle={{fontWeight: 'normal', fontSize: 14}}
+              />
+            )
+          ))
+        }
       </DrawerContentScrollView>
       <View style={stylesBottom.view}>
         <TouchableOpacity onPress={signOut}>
@@ -81,9 +157,23 @@ const stylesBottom = StyleSheet.create({
   },
   itemText: {
     fontSize: 15,
-    fontFamily: 'Roboto-Medium',
-    marginLeft: 5,
+    marginLeft: 32,
     color: '#333'
+  }
+});
+
+const stylesListWithChildren = StyleSheet.create({
+  view: {
+    paddingVertical: 20,
+    paddingLeft: 18,
+    paddingRight: 20
+  },
+  text: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 14
+  },
+  iconLeft: {
+    marginLeft: 'auto'
   }
 });
 
