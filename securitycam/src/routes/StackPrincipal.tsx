@@ -10,11 +10,13 @@ import Recordings from '../screen/recordings';
 import Notifications from '../screen/notifications';
 import CustomDrawer from '../components/CustomDrawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { SettingContext } from '../context/SettingContext';
 
 const Drawer = createDrawerNavigator();
 const SIZE_ICONS = 22;
 
 const StackPrincipal = () => {
+  const { settings } = React.useContext(SettingContext);
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -28,7 +30,9 @@ const StackPrincipal = () => {
             marginLeft: -15,
             fontSize: 15,
             fontFamily: 'Roboto-Medium'
-          }
+          },
+          headerTitle: settings.headerTitle,
+          headerShown: settings.headerShown
         }}
       >
         <Drawer.Screen name="Reports" component={Reports}

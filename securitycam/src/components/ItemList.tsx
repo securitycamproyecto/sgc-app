@@ -5,13 +5,14 @@ import React from 'react';
 interface IItemService {
   text: string;
   nameNavigate: string;
+  params?: any;
 }
 
 const ItemList = (props:IItemService) => {
   const navigation = useNavigation<any>();
 
   return (
-    <TouchableOpacity style={{...styles.container, ...styles.shadow}} onPress={() => navigation.navigate({name: props.nameNavigate})}>
+    <TouchableOpacity style={{...styles.container, ...styles.shadow}} onPress={() => navigation.navigate(props.nameNavigate, props.params)}>
       <View style={styles.icon}>
         <Image source={require('./../assets/old-movie-camera.png')} style={styles.image}/>
       </View>

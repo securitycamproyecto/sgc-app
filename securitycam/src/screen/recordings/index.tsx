@@ -7,10 +7,8 @@ const Stack = createNativeStackNavigator();
 
 function StackRecording() {
   return (
-    <Stack.Navigator screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="ListRecording" component={ListRecording} />
+    <Stack.Navigator>
+      <Stack.Screen name="ListRecording" component={ListRecording} options={{headerShown:false}}/>
       <Stack.Screen name="DetailRecording" component={DetailRecording} />
     </Stack.Navigator>
   );

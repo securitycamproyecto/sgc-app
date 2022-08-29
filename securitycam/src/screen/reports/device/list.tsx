@@ -1,4 +1,6 @@
 import { View, FlatList, StyleSheet } from 'react-native';
+import { SettingContext } from '../../../context/SettingContext';
+import { useIsFocused } from "@react-navigation/native";
 import ItemDevice from '../../../components/ItemList';
 import React from 'react';
 
@@ -15,6 +17,20 @@ const data = [
 ];
 
 export default function ListDevice() {
+  const { setSettings } = React.useContext(SettingContext);
+  const isFocused = useIsFocused();
+
+  React.useEffect(() => {
+    if (isFocused){
+      setSettings({
+        headerTitle: 'Dispositivos',
+        headerComponent: () => null,
+        headerShown: true
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
+
   return (
     <View style={styles.container}>
       <FlatList ItemSeparatorComponent={() => <Separator />} data={data} renderItem={({item}) => <ItemDevice text={item.text} nameNavigate="DetailDevice"/>}/>

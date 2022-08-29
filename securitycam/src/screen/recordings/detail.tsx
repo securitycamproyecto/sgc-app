@@ -1,6 +1,8 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import React from 'react';
+import { SettingContext } from '../../context/SettingContext';
+import { useIsFocused } from "@react-navigation/native";
 import ItemText from '../../components/ItemText';
+import React, { useEffect } from 'react';
 
 interface INotifications {
   text: string;
@@ -38,6 +40,17 @@ function Separator(){
 }
 
 const SectionNotifications = (props:IData) => {
+  const { setSettings } = React.useContext(SettingContext);
+  const isFocused = useIsFocused();
+
+  React.useEffect(() => {
+    if (isFocused){
+      setSettings({
+        headerShown: false
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
   return (
     <View>
@@ -60,7 +73,13 @@ const SectionNotifications = (props:IData) => {
   );
 };
 
-export default function Detail() {
+export default function Detail(props:any) {
+  useEffect(() => {
+    props.navigation.setOptions({title: props.route?.params.title || 'Loading...'});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.route?.params.title]);
+
+  console.log(props.route.params);
   return (
     <View style={styles.container}>
       <FlatList

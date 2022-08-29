@@ -1,5 +1,5 @@
-/* eslint-disable jsx-quotes */
-import {View, StyleSheet, Text, Button} from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import {View, StyleSheet, Text, Dimensions} from 'react-native';
 import React, {useEffect} from 'react';
 import {KinesisVideo} from '@aws-sdk/client-kinesis-video';
 import {KinesisVideoArchivedMedia} from '@aws-sdk/client-kinesis-video-archived-media';
@@ -10,28 +10,33 @@ import Video from 'react-native-video';
 
 Amplify.configure(awsConfig);
 
-const VideoNotFound = () => {
-    return (
-        <View style={styles.videoNotFound}>
-          <View style={styles.notFoundGroup}>
-            <Ionicons name="alert-circle-outline" size={50} color='red' />
-            <Text style={styles.notFoundText}>You don't have any cameras connected</Text>
-            <Button color={'#ff9900'} title='Agregar cámara' onPress={() => console.log('agregar')}/>
-          </View>
-        </View>
-    );
+const optionsDate = {
+  weekday: "short",
+  year: "numeric",
+  month: "2-digit",
+  day: "numeric"
 };
 
 const Loading = () => {
   return (
-    <View style={styles.loading}>
-      <Text>Cargando...</Text>
+    <View style={{...styles.videoNotWorking, ...styles.loading}}>
+      <Text style={styles.colorText}>Cargando...</Text>
+    </View>
+  );
+};
+
+const VideoNotWorking = () => {
+  return (
+    <View style={styles.videoNotWorking}>
+      <Ionicons name="eye-off-outline" size={40} color="#fff"/>
+      <Text style={styles.colorText}>No se pudo conectar la cámara, verifique que este conectado.</Text>
     </View>
   );
 };
 
 const VideoComponent = () => {
   const [urlStream, setUrlStream] = React.useState('');
+  const [time, setTime] = React.useState('');
   const [loading, setLoading] = React.useState(true);
   const [errorStream, setErrorStream] = React.useState({
     message: '',
@@ -102,17 +107,35 @@ const VideoComponent = () => {
     load();
   }, []);
 
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      const remove5hoursDate = new Date().getTime() - (3600000 * 5);
+      setTime(new Date(remove5hoursDate).toLocaleTimeString("es-ES", {hour: '2-digit', minute:'2-digit', timeZone: "America/Lima"}));
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   const onChangeError = (value: object) =>
     setErrorStream(prev => ({...prev, ...value}));
 
   return (
     <View style={styles.view}>
+      <View style={{...styles.headerVideo, ...styles.shadow}}>
+        <Text style={styles.colorText}>Cochera</Text>
+        <View style={styles.timeHeader}>
+          <Text style={{...styles.colorText, marginRight: 15}}>{new Date().toLocaleDateString("es-ES", optionsDate as any)}</Text>
+          <Text style={styles.colorText}>{time}</Text>
+        </View>
+      </View>
       {
         loading ? (
           <Loading />
         ) : (
           errorStream.active ? (
-            <VideoNotFound />
+            <VideoNotWorking />
           ) : (
             <Video
               source={{uri: urlStream}}
@@ -131,37 +154,51 @@ const VideoComponent = () => {
 
 const styles = StyleSheet.create({
   view: {
+    width: Dimensions.get('window').width - 50,
+    height: 300
+  },
+  headerVideo: {
+    height: 50,
+    backgroundColor: '#ff9900',
+    flexDirection: 'row',
+    width: 300,
+    borderTopStartRadius: 20,
+    borderTopEndRadius: 20,
+    alignItems: 'center',
+    paddingHorizontal: 20
+  },
+  timeHeader: {
+    flexDirection: 'row',
+    marginLeft: 'auto'
+  },
+  colorText: {
+    color: '#fff',
+    fontWeight: '600',
+    textAlign: 'center'
   },
   video: {
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: 300,
-    height: 300,
-    margin: 50
-  },
-  videoNotFound: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  notFoundGroup: {
-    paddingVertical: 20,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  notFoundText: {
-    fontSize: 18,
-    color: '#333',
-    marginBottom: 10
-  },
-  notFoundButton: {
-    backgroundColor: 'red'
+    height: 250
   },
   loading: {
+  },
+  videoNotWorking: {
+    height: 250,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomEndRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderTopEndRadius: 20
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4
   }
 });
 

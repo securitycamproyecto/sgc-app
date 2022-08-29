@@ -18,12 +18,15 @@ import awsConfig from './awsConfig';
 // @ts-ignore
 import { withAuthenticator } from 'aws-amplify-react-native';
 import StackNavigator from './src/routes/StackPrincipal';
+import { SettingProvider } from './src/context/SettingContext';
 
 Amplify.configure(awsConfig);
 
 const App = () => {
   return (
-    <StackNavigator />
+    <SettingProvider>
+      <StackNavigator />
+    </SettingProvider>
   );
 };
 

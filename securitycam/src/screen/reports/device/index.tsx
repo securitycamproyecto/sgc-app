@@ -7,10 +7,8 @@ const Stack = createNativeStackNavigator();
 
 function StackDevice() {
   return (
-    <Stack.Navigator screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="ListDevice" component={ListDevice} />
+    <Stack.Navigator>
+      <Stack.Screen name="ListDevice" component={ListDevice} options={{ headerShown: false }}/>
       <Stack.Screen name="DetailDevice" component={DetailDevice} />
     </Stack.Navigator>
   );

@@ -1,54 +1,70 @@
-import { View, StyleSheet, FlatList } from 'react-native';
 import React from 'react';
-import ItemText from '../../components/ItemText';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Configuration from './config';
+import Notifications from './list';
+import { StyleSheet, Text, View } from 'react-native';
 
-interface IData {
-  text: string;
-  date: string;
-  type: 'normal' | 'danger' | 'caution';
-  key: number;
-}
+const Tab = createBottomTabNavigator();
+const SIZE_ICONS = 22;
+const COLOR_FOCUSED = '#ff9900';
+const COLOR_DEFAULT = '#748c94';
 
-const data:IData[] = [
-  {date: 'Hoy 08:31 AM', text: 'Se identificó a CARLOS SANTANA (95%) en la zona SALA', type: 'normal', key: 1},
-  {date: 'Hoy 05:01 AM', text: 'Se identificó a ANA LAURENS (95%) en la zona COCHERA', type: 'normal', key: 2},
-  {date: 'Hace 2 días', text: 'Se identificó a SUJETO PELIGROSO 1 (80%) en la zona SALA', type: 'danger', key: 3},
-  {date: 'Hace 4 días', text: 'Sujeto no conocido, sex FEMALE, age 18', type: 'caution', key: 4}
-];
-
-function Separator(){
+function StackNotifications() {
   return (
-    <View style={styles.separator}/>
-  );
-}
-
-export default function Notifications() {
-  return (
-    <View style={styles.container}>
-      <FlatList
-        ItemSeparatorComponent={() => <Separator/>}
-        data={data}
-        renderItem={({item}) =>
-          <ItemText
-            date={item.date}
-            text={item.text}
-            type={item.type}
-            key={item.key}
-          />
+    <Tab.Navigator screenOptions={{
+        header: () => null,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 25,
+          left: 20,
+          right: 20,
+          backgroundColor: '#fff',
+          borderRadius: 15,
+          height: 90,
+          ...styles.shadow
         }
+      }}
+    >
+      <Tab.Screen name="Notifications" component={Notifications}
+        options={{
+          tabBarIcon: ({focused}) =>
+            <View style={styles.itemTab}>
+              <Ionicons name="notifications-outline" size={SIZE_ICONS} color={focused ? COLOR_FOCUSED : COLOR_DEFAULT}/>
+              <Text style={{color: focused ? COLOR_FOCUSED : COLOR_DEFAULT}}> Notifications </Text>
+            </View>
+        }}
       />
-    </View>
+      <Tab.Screen name="Configurate" component={Configuration}
+        options={{
+          tabBarIcon: ({focused}) =>
+            <View style={styles.itemTab}>
+              <Ionicons name="settings-outline" size={SIZE_ICONS} color={focused ? COLOR_FOCUSED : COLOR_DEFAULT}/>
+              <Text style={{color: focused ? COLOR_FOCUSED : COLOR_DEFAULT}}> Configuración </Text>
+            </View>
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 25,
-    paddingVertical: 30
+  shadow: {
+    shadowColor: '#7F5DF0',
+    shadowOffset: {
+      width: 0,
+      height: 10
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.5,
+    elevation: 5
   },
-  separator: {
-    marginVertical: 10
+  itemTab: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    top: 3
   }
 });
+
+export default StackNotifications;
