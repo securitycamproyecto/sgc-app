@@ -3,6 +3,6 @@ const awsConfig = {
     region: 'us-east-1',
     userPoolId: 'us-east-1_mexzqUREw',
     userPoolWebClientId: '1giv0celb27su5f3d0esri7ejh'
-}
-  
+};
+
 export default awsConfig;
