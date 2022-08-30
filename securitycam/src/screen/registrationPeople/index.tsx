@@ -1,26 +1,18 @@
-import { View, Text } from 'react-native';
-import { SettingContext } from '../../context/SettingContext';
-import { useIsFocused } from "@react-navigation/native";
-import React from 'react';
+import * as React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ListRegisterPeople from './list';
+import DetailRegisterPeople from './detail';
 
-export default function RegistrationPeople() {
-  const { setSettings } = React.useContext(SettingContext);
-  const isFocused = useIsFocused();
+const Stack = createNativeStackNavigator();
 
-  React.useEffect(() => {
-    if (isFocused){
-      setSettings({
-        headerTitle: 'Registro de Personas',
-        headerComponent: () => null,
-        headerShown: true
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused]);
-
+function StackRegistrationPeople(props:any) {
+  const params = props.route?.params || {};
   return (
-    <View>
-      <Text>RegistrationPeople</Text>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="ListRegisterPeople" component={(extra:any) => <ListRegisterPeople {...extra} params={params} />} options={{headerShown:false}}/>
+      <Stack.Screen name="DetailRegisterPeople" component={DetailRegisterPeople} />
+    </Stack.Navigator>
   );
 }
+
+export default StackRegistrationPeople;
