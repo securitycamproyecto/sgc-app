@@ -49,8 +49,8 @@ function Monitoring() {
               ) : (
                 <FlatList
                   data={data}
-                  renderItem={({}) =>
-                    <VideoComponent />
+                  renderItem={({index}) =>
+                    <VideoComponent key={index}/>
                   }
                   ItemSeparatorComponent={() => <View style={{marginVertical: 15}}/>}
                 />

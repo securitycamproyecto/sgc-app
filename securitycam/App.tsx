@@ -8,7 +8,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import 'react-native-url-polyfill/auto';
 import 'react-native-get-random-values';
@@ -19,10 +19,17 @@ import awsConfig from './awsConfig';
 import { withAuthenticator } from 'aws-amplify-react-native';
 import StackNavigator from './src/routes/StackPrincipal';
 import { SettingProvider } from './src/context/SettingContext';
+import { NotificationListener, requestUserPermission } from './src/utils/pushnotification_helper';
 
 Amplify.configure(awsConfig);
 
 const App = () => {
+
+  useEffect(() => {
+    requestUserPermission();
+    NotificationListener();
+  }, []);
+
   return (
     <SettingProvider>
       <StackNavigator />

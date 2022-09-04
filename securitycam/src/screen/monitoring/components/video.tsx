@@ -142,7 +142,9 @@ const VideoComponent = () => {
               ref={ref => {
                 player = ref;
               }}
-              resizeMode="stretch"
+              controls
+              posterResizeMode="cover"
+              resizeMode="cover"
               style={styles.video}
             />
           )
