@@ -20,7 +20,7 @@ const VideoNotFound = () => {
 };
 
 function Monitoring() {
-  const [data] = React.useState([1, 2] as any[]);
+  const [data] = React.useState([1] as any[]);
   const { setSettings } = React.useContext(SettingContext);
   const isDarkMode = useColorScheme() === 'dark';
   const isFocused = useIsFocused();

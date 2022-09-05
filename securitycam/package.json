@@ -8,7 +8,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "build": "cd android/ && ./gradlew assembleRelease && cd .."
+    "build": "cd android && gradlew assembleRelease && cd .."
   },
   "dependencies": {
     "@aws-sdk/client-kinesis-video": "^3.150.0",

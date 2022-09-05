@@ -5,6 +5,7 @@ import { useIsFocused } from "@react-navigation/native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import services from '../../services/api';
 
 interface IItemPerson {
   authorize: boolean;
@@ -24,15 +25,15 @@ function ItemPerson(props:IItemPerson){
   );
 }
 
-const dataAuthorize = [
-  {name: 'Carlos Santana', id: 1, edad: 19, authorize: true},
-  {name: 'Mamá', id: 2, edad: 40, authorize: true},
-  {name: 'Tio Carlos', id: 3, edad: 49, authorize: true}
-];
+// const dataAuthorize = [
+//   {name: 'Carlos Santana', id: 1, edad: 19, authorize: true},
+//   {name: 'Mamá', id: 2, edad: 40, authorize: true},
+//   {name: 'Tio Carlos', id: 3, edad: 49, authorize: true}
+// ];
 
-const dataNoAuthorize = [
-  {name: 'Ex', id: 4, edad: 19, authorize: false}
-];
+// const dataNoAuthorize = [
+//   {name: 'Ex', id: 4, edad: 19, authorize: false}
+// ];
 
 export default function List(props:any) {
   const { setSettings } = React.useContext(SettingContext);
@@ -40,14 +41,19 @@ export default function List(props:any) {
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
-    if (isFocused){
+    const load = async () => {
+      const users = (await services.getPeople('4a64733d-79f5-4108-9258-646cb2dad018') as any).data.Items as Array<any>;
+      const filterUsers = users.filter((x) => x.authorized.S == +props.params?.authorize);
+      setList(filterUsers);
+    }
+    if (isFocused) {
       setSettings({
         headerTitle: props.params?.authorize ? 'Personas autorizadas' : 'Personas no autorizadas',
         headerComponent: () => null,
         headerShown: true
       });
-      setList(() => props.params?.authorize ? dataAuthorize : dataNoAuthorize);
     }
+    load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
@@ -58,10 +64,10 @@ export default function List(props:any) {
         ItemSeparatorComponent={() => <View style={{marginVertical: 15}} />}
         renderItem={({item, index}) =>
           <ItemPerson
-            name={item.name}
-            key={index}
-            edad={item.edad}
-            authorize={props.params?.authorize}
+            name={item.names.S}
+            key={item.id.S}
+            edad={item.age.S}
+            authorize={Boolean(item.authorized.S)}
             navigation={props.navigation}
           />
         }
