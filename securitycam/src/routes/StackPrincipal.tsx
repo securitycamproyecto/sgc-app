@@ -34,7 +34,8 @@ const StackPrincipal = () => {
         drawerContent={props => <CustomDrawer {...props} drawerMenuItems={drawerMenuItems}/>}
         screenOptions={{
           headerTitle: settings.headerTitle,
-          headerShown: settings.headerShown
+          headerShown: settings.headerShown,
+          headerRight: settings.headerComponent
         }}
       >
         {
