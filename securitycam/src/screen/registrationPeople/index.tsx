@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DetailRegisterPeople from './detail';
 import ListRegisterPeople from './list';
+import { ListPeopleProvider } from '../../context/ListPeopleContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,4 +16,12 @@ function StackRegistrationPeople(props:any) {
   );
 }
 
-export default StackRegistrationPeople;
+function StackRegistrationPeopleWithProvider(props:any){
+  return (
+    <ListPeopleProvider>
+      <StackRegistrationPeople {...props}/>
+    </ListPeopleProvider>
+  );
+}
+
+export default StackRegistrationPeopleWithProvider;

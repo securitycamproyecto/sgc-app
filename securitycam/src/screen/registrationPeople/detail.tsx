@@ -7,6 +7,7 @@ import { useIsFocused } from "@react-navigation/native";
 import ImageView from "react-native-image-viewing";
 import RNFetchBlob from 'rn-fetch-blob';
 import React, { useState } from 'react';
+import { ListPeopleContext } from '../../context/ListPeopleContext';
 
 const selectImage = async (setImage: React.Dispatch<React.SetStateAction<string[]>>) => {
   try {
@@ -20,11 +21,14 @@ const selectImage = async (setImage: React.Dispatch<React.SetStateAction<string[
   }
 };
 
+const initForm = {authorize: false, edad: 0, name: "", id: 0, images: [] as string[]};
+
 export default function Detail(props:any) {
   const { setSettings } = React.useContext(SettingContext);
-  const [dataUser, setDataUser] = useState({authorize: false, edad: 0, name: ""});
+  const [dataUser, setDataUser] = useState(initForm);
   const [listImage, setListImage] = useState<string[]>([]);
   const [optionsPreviewImage, setOptionsPreviewImage] = useState({visible: false, position: 0});
+  const { setListPeople, listPeople } =  React.useContext(ListPeopleContext);
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
@@ -37,17 +41,38 @@ export default function Detail(props:any) {
   }, [isFocused]);
 
   React.useEffect(() => {
+    searchUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.route?.params.id]);
+
+  React.useEffect(() => {
+    setConfigScreen();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataUser.name]);
+
+  const searchUser = () => {
+    const { id, authorize } = props.route?.params;
+    let userFinded = listPeople.find((item) => item.id === id) || initForm;
+    if (userFinded.id === 0) {
+      userFinded.authorize = authorize;
+    }
+    if (userFinded.images.length !== 0) {
+      setListImage(userFinded.images);
+    }
+    setDataUser(() => ({ ...userFinded }));
+  };
+
+  const setConfigScreen = () => {
+    const { editMode } = props.route?.params;
     props.navigation.setOptions({
-      title: props.route?.params.user.name || 'Loading...',
+      title: editMode ? dataUser.name : 'Nueva persona',
       headerRight: () => (
         <TouchableOpacity onPress={() => selectImage(setListImage)} >
           <Ionicons name="camera" size={35} color="#333"/>
         </TouchableOpacity>
       )
     });
-    setDataUser(() => ({...(props.route?.params.user || {}) }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.route?.params.user.name]);
+  };
 
   const onDeleteImageForIndex = (position:number) => {
     setListImage(() => ([
@@ -55,16 +80,35 @@ export default function Detail(props:any) {
     ]));
   };
 
+  const onSaveForm = () => {
+    const { editMode } = props.route?.params;
+    editMode ? saveModeEdit() : saveModeCreate();
+    props.navigation.goBack();
+  };
+
+  const saveModeCreate = () =>
+    setListPeople((prev:any) => ([...prev, {...dataUser, images: listImage}]));
+
+  const saveModeEdit = () => {
+    const findIndex = listPeople.findIndex((item) => item.id === dataUser.id);
+    if (findIndex !== -1) {
+      listPeople[findIndex] = { ...dataUser, images: listImage };
+      setListPeople(() => ([...listPeople]));
+    }
+  };
+
+  const onChange = (newValue:object) => setDataUser((prev) => ({...prev, ...newValue}));
+
   return (
     <ScrollView style={styles.view}>
       <Text>Detalle y datos personales</Text>
       <View style={styles.groupInput}>
         <Text>Nombre y apellidos</Text>
-        <TextInput value={dataUser.name} />
+        <TextInput value={dataUser.name} onChangeText={(value) => onChange({name: value})}/>
       </View>
       <View style={styles.groupInput}>
         <Text>Edad</Text>
-        <TextInput value={dataUser.edad + ""} />
+        <TextInput value={dataUser.edad + ""} onChangeText={(value) => onChange({edad: value})}/>
       </View>
       <View style={styles.groupInput}>
         <Text>Autorizado</Text>
@@ -102,7 +146,7 @@ export default function Detail(props:any) {
       <Button
         title="Guardar"
         color={'#ff9900'}
-        onPress={() => console.log('guardando...')}
+        onPress={onSaveForm}
       />
     </ScrollView>
   );
