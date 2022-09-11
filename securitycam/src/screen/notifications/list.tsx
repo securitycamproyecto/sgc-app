@@ -12,10 +12,10 @@ interface IData {
 }
 
 const data:IData[] = [
-  {date: 'Hoy 08:31 AM', text: 'Se identificó a CARLOS SANTANA (95%) en la zona SALA', type: 'normal', key: 1},
-  {date: 'Hoy 05:01 AM', text: 'Se identificó a ANA LAURENS (95%) en la zona COCHERA', type: 'normal', key: 2},
-  {date: 'Hace 2 días', text: 'Se identificó a SUJETO PELIGROSO 1 (80%) en la zona SALA', type: 'danger', key: 3},
-  {date: 'Hace 4 días', text: 'Sujeto no conocido, sex FEMALE, age 18', type: 'caution', key: 4}
+  // {date: 'Hoy 08:31 AM', text: 'Se identificó a CARLOS SANTANA (95%) en la zona SALA', type: 'normal', key: 1},
+  // {date: 'Hoy 05:01 AM', text: 'Se identificó a ANA LAURENS (95%) en la zona COCHERA', type: 'normal', key: 2},
+  // {date: 'Hace 2 días', text: 'Se identificó a SUJETO PELIGROSO 1 (80%) en la zona SALA', type: 'danger', key: 3},
+  // {date: 'Hace 4 días', text: 'Sujeto no conocido, sex FEMALE, age 18', type: 'caution', key: 4}
 ];
 
 function Separator(){

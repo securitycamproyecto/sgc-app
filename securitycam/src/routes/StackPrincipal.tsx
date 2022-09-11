@@ -9,6 +9,9 @@ import Notifications from '../screen/notifications';
 import CustomDrawer from '../components/CustomDrawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SettingContext } from '../context/SettingContext';
+import { Auth } from 'aws-amplify';
+import { Alert } from 'react-native';
+import services from '../services/api';
 
 const Drawer = createDrawerNavigator();
 const SIZE_ICONS = 22;
@@ -26,7 +29,42 @@ const drawerMenuItems = [
 ];
 
 const StackPrincipal = () => {
-  const { settings } = React.useContext(SettingContext);
+  const { settings, setUserId, setNotificationsSettings } = React.useContext(SettingContext);
+
+  React.useEffect(() => {
+    const load = async () => {
+      try {
+        const { attributes } = await Auth.currentUserInfo();
+        const notificationsConfig: any = await services.getNotificationsConfig(attributes.sub);
+        if (notificationsConfig.data.Items.length === 0) {
+          const newNotificationsConfigs = {
+            uuid: null,
+            authorized: '1',
+            notAuthorized: '1',
+            unknown: '1',
+          };
+          await services.setNotificationsConfig(null, attributes.sub, newNotificationsConfigs);
+          setNotificationsSettings(newNotificationsConfigs);
+        } 
+        else {
+          const options = notificationsConfig.data.Items[0];
+          console.log(options);
+          const formattedOptions = {
+            uuid: options.id.S,
+            authorized: options.authorized.S,
+            notAuthorized: options.notAuthorized.S,
+            unknown: options.unknown.S,
+          }
+          setNotificationsSettings(formattedOptions);
+        }
+        setUserId(attributes.sub);
+      } catch (err) {
+        Alert.alert('Error al obtener configuración del usuario');
+      }
+    }
+    load();
+  }, [])
+
   return (
     <NavigationContainer>
       <Drawer.Navigator

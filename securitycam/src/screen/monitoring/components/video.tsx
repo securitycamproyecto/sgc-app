@@ -5,10 +5,10 @@ import {KinesisVideo} from '@aws-sdk/client-kinesis-video';
 import {KinesisVideoArchivedMedia} from '@aws-sdk/client-kinesis-video-archived-media';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import awsConfig from '../../../../awsConfig';
-import Amplify, {Auth} from 'aws-amplify';
+import {Auth} from 'aws-amplify';
 import Video from 'react-native-video';
 
-Amplify.configure(awsConfig);
+// Amplify.configure(awsConfig);
 
 const optionsDate = {
   weekday: "short",

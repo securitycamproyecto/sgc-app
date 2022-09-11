@@ -44,4 +44,9 @@ aws rekognition start-stream-processor --name MyStreamProcessor
     "SessionId": "ce8b07da-3a35-458a-b989-6230dde2193d"
 }
 
+
+aws rekognition delete-collection --collection-id "MyCollection"
+aws rekognition delete-stream-processor --name MyStreamProcessor
+
+
 ====================================

@@ -2,50 +2,36 @@
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { SettingContext } from '../../context/SettingContext';
 import { useIsFocused } from "@react-navigation/native";
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { ListPeopleContext } from '../../context/ListPeopleContext';
 import services from '../../services/api';
 
 interface IItemPerson {
-  authorize: boolean;
-  name: string;
-  navigation: any;
-  edad: any;
-  id: string;
+  data: any
+  navigation: any
 }
 
 function ItemPerson(props:IItemPerson){
-  const { navigation, id, authorize } = props;
+  const { navigation, data } = props;
+  const authorized = data.authorized.S == '1';
   return (
-    <TouchableOpacity style={styles.contentItem} onPress={() => navigation.navigate('DetailRegisterPeople', { id, editMode: true, authorize  })}>
-      <Ionicons name={props.authorize ? 'checkmark-circle' : 'close-circle'} size={40} color={props.authorize ? 'green' : 'red'} />
-      <Text style={styles.textItem}>{props.name}</Text>
+    <TouchableOpacity style={styles.contentItem} onPress={() => navigation.navigate('DetailRegisterPeople', { authorized, editMode: true, data })}>
+      <Ionicons name={authorized ? 'checkmark-circle' : 'close-circle'} size={40} color={authorized ? 'green' : 'red'} />
+      <Text style={styles.textItem}>{data.names.S}</Text>
       <Ionicons style={styles.iconItem} name="chevron-forward" size={30} />
     </TouchableOpacity>
   );
 }
 
-// const dataAuthorize = [
-//   {name: 'Carlos Santana', id: 1, edad: 19, authorize: true},
-//   {name: 'Mamá', id: 2, edad: 40, authorize: true},
-//   {name: 'Tio Carlos', id: 3, edad: 49, authorize: true}
-// ];
-
-// const dataNoAuthorize = [
-//   {name: 'Ex', id: 4, edad: 19, authorize: false}
-// ];
-
 export default function List(props:any) {
   const { setSettings } = React.useContext(SettingContext);
-  const { listPeople } =  React.useContext(ListPeopleContext);
   const [list, setList] = useState([] as any[]);
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
     const load = async () => {
-      const users = (await services.getPeople('4a64733d-79f5-4108-9258-646cb2dad018') as any).data.Items as Array<any>;
+      const users = (await services.getPeople('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2') as any).data.Items as Array<any>;
       const filterUsers = users.filter((x) => x.authorized.S == +props.params?.authorize);
       setList(filterUsers);
     }
@@ -53,14 +39,13 @@ export default function List(props:any) {
       setSettings({
         headerTitle: props.params?.authorize ? 'Personas autorizadas' : 'Personas no autorizadas',
         headerComponent: () =>
-          <TouchableOpacity onPress={() => props.navigation.navigate('DetailRegisterPeople', { authorize: props.params?.authorize, editMode: false, id: 0 })} >
+          <TouchableOpacity onPress={() => props.navigation.navigate('DetailRegisterPeople', { authorized: props.params?.authorize, editMode: false, data: null })} >
             <Ionicons name="person-add" size={25} color="#333" style={{marginRight: 10}}/>
           </TouchableOpacity>,
         headerShown: true
       });
+      load();
     }
-    load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   return (
@@ -69,13 +54,7 @@ export default function List(props:any) {
         data={list}
         ItemSeparatorComponent={() => <View style={{marginVertical: 15}} />}
         renderItem={({item, index}) =>
-          <ItemPerson
-            name={item.names.S}
-            id={item.id.S}
-            edad={item.age.S}
-            authorize={Boolean(item.authorized.S)}
-            navigation={props.navigation}
-          />
+          <ItemPerson data={item} navigation={props.navigation}/>
         }
       />
     </View>
@@ -99,9 +78,11 @@ const styles = StyleSheet.create({
   },
   textItem: {
     marginHorizontal: 15,
-    fontWeight: '600'
+    fontWeight: '600',
+    color: 'black'
   },
   iconItem: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    color: 'black'
   }
 });
