@@ -1,8 +1,7 @@
 import { View, FlatList, StyleSheet } from 'react-native';
-import { SettingContext } from '../../context/SettingContext';
-import { useIsFocused } from "@react-navigation/native";
 import ItemDevice from '../../components/ItemList';
 import React from 'react';
+import HeaderMainContextHook from '../../hooks/HeaderMainContextHook';
 
 function Separator(){
   return (
@@ -17,19 +16,11 @@ const data = [
 ];
 
 export default function ListDevice() {
-  const { setSettings } = React.useContext(SettingContext);
-  const isFocused = useIsFocused();
-
-  React.useEffect(() => {
-    if (isFocused){
-      setSettings({
-        headerTitle: 'Grabaciones',
-        headerComponent: () => null,
-        headerShown: true
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused]);
+  HeaderMainContextHook({
+    headerTitle: 'Grabaciones',
+    headerComponent: () => null,
+    headerShown: true
+  });
 
   return (
     <View style={styles.container}>

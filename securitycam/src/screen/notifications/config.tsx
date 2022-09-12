@@ -2,7 +2,7 @@
 import { View, StyleSheet, FlatList, Button, ScrollView, Alert } from 'react-native';
 import { SettingContext } from '../../context/SettingContext';
 import { useIsFocused } from "@react-navigation/native";
-import React, { useState } from 'react';
+import React from 'react';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import services from '../../services/api';
 
@@ -31,20 +31,20 @@ function TemplateItemConfig(props: ITemplateItemConfig) {
 }
 
 const Config = () => {
-  const { setSettings, userId, setNotificationsSettings, notificationsSettings } = React.useContext(SettingContext);
+  const { setSettings, userId, notificationsSettings } = React.useContext(SettingContext);
   const [options, setOptions] = React.useState<any>([]);
   const isFocused = useIsFocused();
 
   const onPress = (e: boolean, i: number) => {
     options[i].isChecked = e;
     setOptions(options);
-  }
+  };
 
   const onSave = async () => {
     const body = {
       authorized: +options[0].isChecked + "",
       notAuthorized: +options[1].isChecked + "",
-      unknown: +options[2].isChecked + "",
+      unknown: +options[2].isChecked + ""
     };
     try {
       await services.setNotificationsConfig(notificationsSettings.uuid, userId as unknown as string, body);
@@ -53,7 +53,7 @@ const Config = () => {
       Alert.alert('Error al guardar la configuración');
     }
 
-  }
+  };
 
   const onFocused = () => {
     setSettings({
@@ -61,25 +61,27 @@ const Config = () => {
       headerComponent: () => null,
       headerShown: true
     });
-  }
+  };
 
   React.useEffect(() => {
-    if (isFocused) onFocused();
+    if (isFocused){
+      onFocused();
+    }
     const newOption = [
       {
-        isChecked: notificationsSettings.authorized == '1',
+        isChecked: notificationsSettings.authorized === '1',
         color: '#00a6ff',
-        text: 'Notificaciones de personas autorizadas',
+        text: 'Notificaciones de personas autorizadas'
       },
       {
-        isChecked: notificationsSettings.unknown == '1',
+        isChecked: notificationsSettings.unknown === '1',
         color: '#ffba5c',
-        text: 'Notificaciones de personas no conocidas',
+        text: 'Notificaciones de personas no conocidas'
       },
       {
-        isChecked: notificationsSettings.notAuthorized == '1',
+        isChecked: notificationsSettings.notAuthorized === '1',
         color: '#f95f62',
-        text: 'Notificaciones de personas no autorizadas',
+        text: 'Notificaciones de personas no autorizadas'
       }
     ];
 
@@ -110,7 +112,7 @@ const Config = () => {
       />
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

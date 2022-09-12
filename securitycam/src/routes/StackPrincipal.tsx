@@ -41,7 +41,7 @@ const StackPrincipal = () => {
             uuid: null,
             authorized: '1',
             notAuthorized: '1',
-            unknown: '1',
+            unknown: '1'
           };
           await services.setNotificationsConfig(null, attributes.sub, newNotificationsConfigs);
           setNotificationsSettings(newNotificationsConfigs);
@@ -53,17 +53,17 @@ const StackPrincipal = () => {
             uuid: options.id.S,
             authorized: options.authorized.S,
             notAuthorized: options.notAuthorized.S,
-            unknown: options.unknown.S,
-          }
+            unknown: options.unknown.S
+          };
           setNotificationsSettings(formattedOptions);
         }
         setUserId(attributes.sub);
       } catch (err) {
         Alert.alert('Error al obtener configuración del usuario');
       }
-    }
+    };
     load();
-  }, [])
+  }, []);
 
   return (
     <NavigationContainer>

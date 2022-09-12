@@ -1,17 +1,21 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
 
-export default function DatePicker() {
+interface IDatePicker {
+  onChange: (value:number | undefined) => void | any;
+}
+
+export default function DatePicker(props:IDatePicker) {
   return (
     <View>
-        <Text>Holin't</Text>
         <DateTimePicker
           value={new Date()}
           display="default"
           is24Hour={true}
-          mode="time"
+          mode="date"
           testID="dateTimePicker"
+          onChange={(value) => value.type === "set" ? props.onChange(value.nativeEvent.timestamp) : null}
         />
     </View>
   );

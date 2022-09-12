@@ -11,7 +11,7 @@ const notificationsSettingsDefault = {
     uuid: null,
     authorized: '1',
     notAuthorized: '1',
-    unknown: '1',
+    unknown: '1'
 };
 
 export const SettingContext = createContext({

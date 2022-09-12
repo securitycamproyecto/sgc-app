@@ -204,7 +204,6 @@ export default function Detail(props:any) {
           title="Guardar"
           color={'#ff9900'}
           onPress={onSaveForm}
-          
         />
         <View style={{paddingTop: 30}}/>
       </ScrollView>

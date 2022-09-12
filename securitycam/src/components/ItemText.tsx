@@ -5,11 +5,12 @@ interface IItemService {
   text: string;
   date: string;
   type: 'normal' | 'danger' | 'caution';
+  onPress?: () => void;
 }
 
 const ItemText = (props:IItemService) => {
   return (
-    <TouchableOpacity style={{...styles.container, ...styles.shadow}}>
+    <TouchableOpacity style={{...styles.container, ...styles.shadow}} onPress={props.onPress}>
       <View style={{...styleTypeText[props.type], ...styleTypeText.container}}>
         <Text style={styleTypeText.text}>{props.date}</Text>
       </View>

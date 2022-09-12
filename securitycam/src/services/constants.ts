@@ -10,4 +10,4 @@ export default {
     PEOPLE_ENDPOINT,
     NOTIFICATION_CONFIG_ENDPOINT,
     FACES_ENDPOINT
-}
+};

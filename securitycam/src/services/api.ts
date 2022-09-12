@@ -1,6 +1,6 @@
 import axios from 'axios';
 import endpoints from './constants';
-import RNFetchBlob from 'rn-fetch-blob';
+//import RNFetchBlob from 'rn-fetch-blob';
 
 const getPeople = async (clientId: string) => {
     try {
@@ -9,7 +9,7 @@ const getPeople = async (clientId: string) => {
         console.log(err);
     }
     return [];
-}
+};
 
 const setPeople = async (uuid: string | null, body: any) => {
     try {
@@ -18,7 +18,7 @@ const setPeople = async (uuid: string | null, body: any) => {
         console.log(err);
     }
     return [];
-}
+};
 
 const getNotificationsConfig = async (userId: string) => {
     try {
@@ -27,7 +27,7 @@ const getNotificationsConfig = async (userId: string) => {
         console.log(err);
     }
     return [];
-}
+};
 
 const setNotificationsConfig = async (uuid: string | null, userId: string, body: any) => {
     try {
@@ -36,7 +36,7 @@ const setNotificationsConfig = async (uuid: string | null, userId: string, body:
         console.log(err);
     }
     return [];
-}
+};
 
 const getFaces = async (peopleId: string) => {
     try {
@@ -45,7 +45,7 @@ const getFaces = async (peopleId: string) => {
         console.log(err);
     }
     return [];
-}
+};
 
 const setFaces = async (body: any) => {
     try {
@@ -62,7 +62,7 @@ const setFaces = async (body: any) => {
         console.log(err);
     }
     return [];
-}
+};
 
 export default {
     getPeople,
@@ -71,4 +71,4 @@ export default {
     setNotificationsConfig,
     getFaces,
     setFaces
-}
+};
