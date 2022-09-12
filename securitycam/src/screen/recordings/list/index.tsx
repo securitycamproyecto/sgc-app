@@ -1,7 +1,7 @@
 import { View, FlatList, StyleSheet } from 'react-native';
-import ItemDevice from '../../components/ItemList';
+import ItemDevice from '../../../components/ItemList';
 import React from 'react';
-import HeaderMainContextHook from '../../hooks/HeaderMainContextHook';
+import HeaderMainContextHook from '../../../hooks/HeaderMainContextHook';
 
 function Separator(){
   return (

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import HeaderMainContextHook from '../../hooks/HeaderMainContextHook';
+import HeaderMainContextHook from '../../../hooks/HeaderMainContextHook';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import Video from 'react-native-video';

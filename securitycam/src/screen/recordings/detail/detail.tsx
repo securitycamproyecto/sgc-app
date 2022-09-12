@@ -1,6 +1,6 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import HeaderMainContextHook from '../../hooks/HeaderMainContextHook';
-import ItemText from '../../components/ItemText';
+import HeaderMainContextHook from '../../../hooks/HeaderMainContextHook';
+import ItemText from '../../../components/ItemText';
 import { ISectionNotifications, data } from './IDetail';
 import React, { useEffect } from 'react';
 

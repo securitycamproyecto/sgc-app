@@ -33,7 +33,7 @@ export default function ListDevice() {
 
   return (
     <View style={styles.container}>
-      <FlatList ItemSeparatorComponent={() => <Separator />} data={data} renderItem={({item}) => <ItemDevice text={item.text} nameNavigate="DetailDevice"/>}/>
+      <FlatList ItemSeparatorComponent={() => <Separator />} data={data} renderItem={({item}) => <ItemDevice text={item.text} nameNavigate="DetailDevice" params={{title: item.text}}/>}/>
     </View>
   );
 }

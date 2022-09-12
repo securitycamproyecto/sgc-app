@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ListRecording from './list';
-import DetailRecording from './detail';
-import DetailVideo from './detailVideo';
+import DetailRecording from './detail/detail';
+import DetailVideo from './detail/detailVideo';
 
 const Stack = createNativeStackNavigator();
 
