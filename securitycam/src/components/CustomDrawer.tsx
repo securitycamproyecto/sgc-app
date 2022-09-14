@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useIsFocused } from "@react-navigation/native";
 import { Auth } from 'aws-amplify';
 
 const signOut = async () => {
@@ -63,6 +64,46 @@ function TemplateListWithChildren(props: ITemplateListWithChildren){
   );
 }
 
+const ViewHelp = (props: {navigation:any}) => {
+  const [showOptions, setShowOptions] = useState(false);
+  const isFocused = useIsFocused();
+
+    React.useEffect(() => {
+        if (isFocused){
+          setShowOptions(false);
+        }
+    }, [isFocused]);
+
+  const navigate = (view:string) => {
+    setShowOptions(false);
+    props.navigation.navigate(view);
+  };
+
+  return (
+    <View>
+      {
+        showOptions && (
+          <>
+            <View style={styleHelp.containerOptions}>
+              <TouchableOpacity style={{...styleHelp.itemOption, ...styleHelp.itemStart}} onPress={() => navigate('Manual')}>
+                <Text style={{color: '#fff'}}>Manual</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{...styleHelp.itemOption, ...styleHelp.itemEnd}} onPress={() => navigate('Soporte')}>
+                <Text style={{color: '#fff'}}>Soporte</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styleHelp.triangle}/>
+          </>
+        )
+      }
+      <TouchableOpacity style={styleHelp.containterHelp} onPress={() => setShowOptions(!showOptions)}>
+        <Ionicons name="help-circle" size={35} color="#333" style={styleHelp.iconHelp}/>
+        <Text>Ayuda</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 const CustomDrawer = (props:any) => {
   return (
     <View style={styles.view}>
@@ -74,31 +115,34 @@ const CustomDrawer = (props:any) => {
         </View>
         {
           props.drawerMenuItems?.map((item:any, index:number) => (
-            item.list ? (
-              <TemplateListWithChildren
-                icon={item.icon}
-                title={item.title}
-                key={index}
-                state={props.state}
-                navigation={props.navigation}
-                list={item.list}
-              />
-            ) : (
-              <DrawerItem
-                key={index}
-                label={item.title}
-                focused={props.state.routes[props.state.index].name === item.name}
-                onPress={() => props.navigation.navigate(item.name)}
-                icon={({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>}
-                activeTintColor="#fff"
-                activeBackgroundColor="#ff9900"
-                inactiveTintColor="#333"
-                labelStyle={{fontWeight: 'normal', fontSize: 14}}
-              />
+            !item.ocult && (
+              item.list ? (
+                <TemplateListWithChildren
+                  icon={item.icon}
+                  title={item.title}
+                  key={index}
+                  state={props.state}
+                  navigation={props.navigation}
+                  list={item.list}
+                />
+              ) : (
+                <DrawerItem
+                  key={index}
+                  label={item.title}
+                  focused={props.state.routes[props.state.index].name === item.name}
+                  onPress={() => props.navigation.navigate(item.name)}
+                  icon={({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>}
+                  activeTintColor="#fff"
+                  activeBackgroundColor="#ff9900"
+                  inactiveTintColor="#333"
+                  labelStyle={{fontWeight: 'normal', fontSize: 14}}
+                />
+              )
             )
           ))
         }
       </DrawerContentScrollView>
+      <ViewHelp navigation={props.navigation}/>
       <View style={stylesBottom.view}>
         <TouchableOpacity onPress={signOut}>
           <View style={stylesBottom.itemList}>
@@ -139,6 +183,55 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#fff'
+  }
+});
+
+const styleHelp = StyleSheet.create({
+  containterHelp: {
+    marginLeft: 'auto',
+    paddingHorizontal: 15,
+    paddingVertical: 8
+  },
+  iconHelp: {
+    marginBottom: -8
+  },
+  containerOptions: {
+    flexDirection: 'row',
+    marginLeft: 'auto',
+    paddingRight: 12,
+    marginBottom: 0
+  },
+  triangle: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopWidth: 10,
+    borderRightWidth: 7,
+    borderBottomWidth: 0,
+    borderLeftWidth: 7,
+    borderTopColor: '#ff9900',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: 'transparent',
+    marginLeft: 'auto',
+    marginRight: 30,
+    marginBottom: -10
+  },
+  itemOption: {
+    backgroundColor: '#ff9900',
+    paddingVertical: 7,
+    paddingHorizontal: 15,
+    borderColor: '#fff',
+    borderWidth: 0.5
+  },
+  itemStart: {
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10
+  },
+  itemEnd: {
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10
   }
 });
 

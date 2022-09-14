@@ -5,6 +5,8 @@ import Monitoring from '../screen/monitoring';
 import Reports from '../screen/reports';
 import RegistrationPeople from '../screen/registrationPeople';
 import Recordings from '../screen/recordings';
+import Manual from '../screen/help/manual';
+import Soporte from '../screen/help/soporte';
 import Notifications from '../screen/notifications';
 import CustomDrawer from '../components/CustomDrawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -25,7 +27,9 @@ const drawerMenuItems = [
     ]
   },
   {name: 'Recordings', title: 'Grabaciones', icon:'server', component: Recordings},
-  {name: 'Notifications', title: 'Notificaciones', icon:'notifications', component: Notifications}
+  {name: 'Notifications', title: 'Notificaciones', icon:'notifications', component: Notifications},
+  {name: 'Manual', title: 'Manual', icon:'notifications', component: Manual, ocult: true},
+  {name: 'Soporte', title: 'Soporte', icon:'notifications', component: Soporte, ocult: true}
 ];
 
 const StackPrincipal = () => {
