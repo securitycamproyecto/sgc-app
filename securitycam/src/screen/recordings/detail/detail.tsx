@@ -1,8 +1,10 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import HeaderMainContextHook from '../../../hooks/HeaderMainContextHook';
 import ItemText from '../../../components/ItemText';
-import { ISectionNotifications, data } from './IDetail';
+// import { ISectionNotifications, data } from './IDetail';
 import React, { useEffect } from 'react';
+import moment from 'moment';
+import services from '../../../services/api';
 
 function Separator(){
   return (
@@ -10,36 +12,50 @@ function Separator(){
   );
 }
 
-const SectionNotifications = (props:ISectionNotifications) => {
+const SectionNotifications = (props: any) => {
   return (
     <View>
       <View style={styles.headerSection}>
-        <Text style={styles.headerText}>{props.mounth}</Text>
+        <Text style={styles.headerText}>{props.month}</Text>
       </View>
       <FlatList
         ItemSeparatorComponent={() => <Separator/>}
-        data={props.notifications}
-        renderItem={({item}) =>
-          <ItemText
-            date={item.date}
-            text={item.text}
-            type={item.type}
-            key={item.key}
-            onPress={() => props.navigation.navigate('DetailVideoRecording', {title: item.date, ...item})}
-          />
-        }
+        data={props.records}
+        renderItem={({item}) => {
+          const text = item.label === 'unknown' ? 'Se identifico a un sujeto desconocido' : 'Se identifico a ' + item.names + (item.similarity ? ' (' + item.similarity + '%)' : '');
+          const date = moment(item.date).format('DD/MM/YYYY h:mm:ss a');
+          return (
+            <ItemText
+              date={date}
+              text={text}
+              type={item.type}
+              key={item.id}
+              onPress={() => props.navigation.navigate('DetailVideoRecording', {title: date, ...item})}
+            />
+          )
+        }}
       />
     </View>
   );
 };
 
-export default function Detail(props:any) {
+const Detail = (props: any) => {
   HeaderMainContextHook({headerShown: false});
+  const [data, setData] = React.useState<any>([{month: 'Últimos 7 días', records: []}])
 
   useEffect(() => {
     props.navigation.setOptions({title: props.route?.params.title || 'Loading...'});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.route?.params.title]);
+
+  useEffect(() => {
+    const load = async () => {
+      const records = (await services.getRecords('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2') as any).data as Array<any>;
+      data[0].records = records.sort((x: any, y: any) => new Date(y.date).getTime() - new Date(x.date).getTime());
+      setData([...data]);
+    }
+    load();
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -48,16 +64,18 @@ export default function Detail(props:any) {
         data={data}
         renderItem={({item}) =>
           <SectionNotifications
-            mounth={item.mounth}
-            notifications={item.notifications}
+            month={item.month}
+            records={item.records}
             navigation={props.navigation}
-            key={item.mounth}
+            key={item.month}
           />
         }
       />
     </View>
   );
 }
+
+export default Detail;
 
 const styles = StyleSheet.create({
   container: {

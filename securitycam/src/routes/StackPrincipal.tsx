@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Monitoring from '../screen/monitoring';
+import Monitoring from '../screen/monitoring/index';
 import Reports from '../screen/reports';
 import RegistrationPeople from '../screen/registrationPeople';
 import Recordings from '../screen/recordings';
@@ -18,15 +18,15 @@ import services from '../services/api';
 const Drawer = createDrawerNavigator();
 const SIZE_ICONS = 22;
 const drawerMenuItems = [
-  {name: 'Reports', title: 'Reportes', icon:'document', component: Reports},
   {name: 'Monitoring', title: 'Monitoreo en Vivo', icon:'videocam', component: Monitoring},
+  {name: 'Recordings', title: 'Grabaciones', icon:'server', component: Recordings},
   {name: 'RegistrationPeople', title: 'Registro de Personas', icon:'person-add', component: RegistrationPeople,
     list: [
       { name: 'RegistrationPeople', title: 'Personas Autorizadas', icon:'happy', component: RegistrationPeople, params: {key: 1, authorize: true} },
       { name: 'RegistrationPeople', title: 'Personas No Autorizadas', icon:'sad', component: RegistrationPeople, params: {key: 2, authorize: false} }
     ]
   },
-  {name: 'Recordings', title: 'Grabaciones', icon:'server', component: Recordings},
+  {name: 'Reports', title: 'Reportes', icon:'document', component: Reports},
   {name: 'Notifications', title: 'Notificaciones', icon:'notifications', component: Notifications},
   {name: 'Manual', title: 'Manual', icon:'notifications', component: Manual, ocult: true},
   {name: 'Soporte', title: 'Soporte', icon:'notifications', component: Soporte, ocult: true}
@@ -52,7 +52,6 @@ const StackPrincipal = () => {
         } 
         else {
           const options = notificationsConfig.data.Items[0];
-          console.log(options);
           const formattedOptions = {
             uuid: options.id.S,
             authorized: options.authorized.S,

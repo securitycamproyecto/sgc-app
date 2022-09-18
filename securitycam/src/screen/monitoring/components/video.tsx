@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {View, StyleSheet, Text, Dimensions} from 'react-native';
+import {View, StyleSheet, Text, Dimensions, TouchableOpacity} from 'react-native';
 import React, {useEffect} from 'react';
 import {KinesisVideo} from '@aws-sdk/client-kinesis-video';
 import {KinesisVideoArchivedMedia} from '@aws-sdk/client-kinesis-video-archived-media';
@@ -34,7 +34,7 @@ const VideoNotWorking = () => {
   );
 };
 
-const VideoComponent = () => {
+const VideoComponent = (props: any) => {
   const [urlStream, setUrlStream] = React.useState('');
   const [time, setTime] = React.useState('');
   const [loading, setLoading] = React.useState(true);
@@ -129,6 +129,11 @@ const VideoComponent = () => {
           <Text style={{...styles.colorText, marginRight: 15}}>{new Date().toLocaleDateString("es-ES", optionsDate as any)}</Text>
           <Text style={styles.colorText}>{time}</Text>
         </View>
+        <View>
+          <TouchableOpacity onPress={() => props.navigation.navigate('DetailMonitoring', {title: 'Detalle en vivo'})}>
+            <Ionicons name="eye" size={25} color="#fff"/>
+          </TouchableOpacity>
+        </View>
       </View>
       {
         loading ? (
@@ -160,18 +165,19 @@ const styles = StyleSheet.create({
     height: 300
   },
   headerVideo: {
-    height: 50,
+    height: 40,
     backgroundColor: '#ff9900',
     flexDirection: 'row',
-    width: 300,
-    borderTopStartRadius: 20,
-    borderTopEndRadius: 20,
+    // width: 300,
+    borderTopStartRadius: 10,
+    borderTopEndRadius: 10,
     alignItems: 'center',
-    paddingHorizontal: 20
+    paddingHorizontal: 10
   },
   timeHeader: {
     flexDirection: 'row',
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    paddingHorizontal: 15
   },
   colorText: {
     color: '#fff',
@@ -179,18 +185,18 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   video: {
-    height: 250
+    height: 200
   },
   loading: {
   },
   videoNotWorking: {
-    height: 250,
+    height: 200,
     backgroundColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomEndRadius: 20,
-    borderBottomLeftRadius: 20,
-    borderTopEndRadius: 20
+    borderBottomEndRadius: 10,
+    borderBottomLeftRadius: 10,
+    // borderTopEndRadius: 20
   },
   shadow: {
     shadowColor: '#000',

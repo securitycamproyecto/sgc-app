@@ -11,8 +11,8 @@ function Separator(){
 
 const data = [
   {text: 'Sala'},
-  {text: 'Cochera'},
-  {text: 'Entrada'}
+  // {text: 'Cochera'},
+  // {text: 'Entrada'}
 ];
 
 export default function ListDevice() {
@@ -24,7 +24,13 @@ export default function ListDevice() {
 
   return (
     <View style={styles.container}>
-      <FlatList ItemSeparatorComponent={() => <Separator />} data={data} renderItem={({item}) => <ItemDevice text={item.text} nameNavigate="DetailRecording" params={{title: item.text}}/>}/>
+      <FlatList 
+        ItemSeparatorComponent={() => <Separator />} 
+        data={data} 
+        renderItem={({item}) => 
+          <ItemDevice text={item.text} nameNavigate="DetailRecording" params={{title: item.text}}/>
+        }
+      />
     </View>
   );
 }

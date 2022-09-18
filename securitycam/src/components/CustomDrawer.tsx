@@ -109,7 +109,7 @@ const CustomDrawer = (props:any) => {
     <View style={styles.view}>
       <DrawerContentScrollView {...props}>
         <View style={styles.contentProfile}>
-          <Image source={require('./../assets/profile.jpg')} style={styles.profileImage} />
+          <Image source={require('./../assets/profile.png')} style={styles.profileImage} />
           <Text style={styles.textTitle}>Security IA</Text>
           <Text style={styles.textDescription}>Monitoreo para el hogar</Text>
         </View>
@@ -189,11 +189,13 @@ const styles = StyleSheet.create({
 const styleHelp = StyleSheet.create({
   containterHelp: {
     marginLeft: 'auto',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 8
   },
   iconHelp: {
-    marginBottom: -8
+    // marginBottom: -8
   },
   containerOptions: {
     flexDirection: 'row',

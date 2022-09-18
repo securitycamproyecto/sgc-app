@@ -20,7 +20,6 @@ function Carrousel(props:{navigation:any}) {
     }, [isFocused]);
 
     const isLast:boolean = (images.length - 1) === position;
-    const finishImage = () => props.navigation.goBack();
     return (
         <View style={styles.carrousel}>
             {
@@ -31,9 +30,12 @@ function Carrousel(props:{navigation:any}) {
                 )
             }
             <Image source={{uri: images[position]}} style={styles.image} />
-            <TouchableOpacity onPress={() => isLast ? finishImage() : setPosition(position + 1)} style={styles.rigth}>
-                <Ionicons name="chevron-forward-circle" size={50} color="#ff9900"/>
-            </TouchableOpacity>
+            {
+              !isLast &&
+              <TouchableOpacity onPress={() => setPosition(position + 1)} style={styles.rigth}>
+                  <Ionicons name="chevron-forward-circle" size={50} color="#ff9900"/>
+              </TouchableOpacity>
+            }
         </View>
     );
 }

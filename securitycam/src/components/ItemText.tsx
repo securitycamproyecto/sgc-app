@@ -46,10 +46,12 @@ const styles = StyleSheet.create({
 const styleTypeText = StyleSheet.create({
   container: {
     height: 25,
-    width: 110,
+    width: 170,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    marginBottom: 5
   },
   normal: {
     backgroundColor: '#56c1fa'

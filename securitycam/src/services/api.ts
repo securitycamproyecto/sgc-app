@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import endpoints from './constants';
 //import RNFetchBlob from 'rn-fetch-blob';
 
@@ -14,6 +14,18 @@ const getPeople = async (clientId: string) => {
 const setPeople = async (uuid: string | null, body: any) => {
     try {
         return await axios.post(`${endpoints.PEOPLE_ENDPOINT}?uuid=${uuid}`, body);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return [];
+};
+
+const removePeople = async (id: string | null) => {
+    try {
+        const options: AxiosRequestConfig<any> = { 
+            headers: { "Content-Type": "application/json;charset=utf-8" }
+        };
+        return await axios.delete(`${endpoints.PEOPLE_ENDPOINT}/${id}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -64,11 +76,39 @@ const setFaces = async (body: any) => {
     return [];
 };
 
+const removeFaces = async (body: any) => {
+    try {
+        const options: AxiosRequestConfig<any> = { 
+            headers: { "Content-Type": "application/json;charset=utf-8" },
+            data: body
+        };
+        return await axios.delete(`${endpoints.FACES_ENDPOINT}/${Date.now()}`, options);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return [];
+};
+
+const getRecords = async (clientId: string) => {
+    try {
+        const options: AxiosRequestConfig<any> = { 
+            headers: { "Content-Type": "application/json;charset=utf-8" },
+        };
+        return await axios.get(`${endpoints.ANALYSIS_ENDPOINT}/records/${clientId}`, options);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return [];
+}
+
 export default {
     getPeople,
     setPeople,
     getNotificationsConfig,
     setNotificationsConfig,
     getFaces,
-    setFaces
+    setFaces,
+    removeFaces,
+    removePeople,
+    getRecords
 };

@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
     width: 30
   },
   text: {
-    fontWeight: '800'
+    fontWeight: '800',
+    color: '#000'
   },
   shadow: {
     shadowColor: '#000',

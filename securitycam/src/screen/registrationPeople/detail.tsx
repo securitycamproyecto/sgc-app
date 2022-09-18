@@ -46,6 +46,7 @@ export default function Detail(props:any) {
   const { setSettings } = React.useContext(SettingContext);
   const [dataUser, setDataUser] = useState({...initForm, images: [], authorized: props.route?.params.authorized});
   const [listImage, setListImage] = useState<any[]>([]);
+  const [listRemoveImage, setListRemoveImage] = useState<any[]>([]);
   const [optionsPreviewImage, setOptionsPreviewImage] = useState({visible: false, position: 0});
   const isFocused = useIsFocused();
 
@@ -65,6 +66,10 @@ export default function Detail(props:any) {
     setListImage(() => ([
       ...listImage.filter((_, index) => index !== position)
     ]));
+    setListRemoveImage((state) => ([
+      ...state,
+      listImage.find((_, index) => index === position)
+    ]));
   };
 
   const onChange = (newValue:object) => setDataUser((prev) => ({...prev, ...newValue}));
@@ -76,7 +81,6 @@ export default function Detail(props:any) {
       authorized: +dataUser.authorized + "",
       clientId: "68fdd0e1-7520-4fa4-969c-efe4f7cc31b2"
     });
-    console.log('===result===', result);
     for (const image of listImage) {
       if (image.uri)
         await services.setFaces({
@@ -106,12 +110,31 @@ export default function Detail(props:any) {
           "collection": "MyCollection",
           "bucket": "myrekognitioncollections"
         });
-    }
+    };
+    const facesIds = listRemoveImage.map((x) => x.id);
+    const externalFacesIds = listRemoveImage.map((x) => x.externalImageId);
+    const removeBody = {
+      "bucket": "myrekognitioncollections",
+      "collection": "MyCollection",
+      "facesIds": facesIds,
+      "externalFacesIds": externalFacesIds
+    };
+    await services.removeFaces(removeBody);
     Alert.alert('Persona actualizada');
   };
 
+  const isModelValid = () => {
+    if (!dataUser.names) return false;
+    if (!dataUser.age) return false;
+    return true;
+  }
+
   const onSaveForm = async () => {
     const { editMode } = props.route?.params;
+    if(!isModelValid()) {
+      Alert.alert('Por favor, completar todos los campos');
+      return;
+    }
     try {
       editMode ? await saveModeEdit() : await saveModeCreate();
       props.navigation.goBack();
@@ -119,6 +142,36 @@ export default function Detail(props:any) {
       Alert.alert('Hubo un error al guardar');
     }
   };
+
+  const onConfirmDelete = async () => {
+    Alert.alert(
+      "Security Cam",
+      "¿Desea eliminar la persona de la lista?",
+      [
+        {
+          text: "No eliminar",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Sí", onPress: onDelete }
+      ]
+    )
+  }
+
+  const onDelete = async () => {
+    await services.removePeople(dataUser.id);
+    const facesIds = listImage.map((x) => x.id);
+    const externalFacesIds = listImage.map((x) => x.externalImageId);
+    const removeBody = {
+      "bucket": "myrekognitioncollections",
+      "collection": "MyCollection",
+      "facesIds": facesIds,
+      "externalFacesIds": externalFacesIds
+    };
+    await services.removeFaces(removeBody);
+    Alert.alert('Persona eliminada');
+    props.navigation.goBack();
+  }
 
   React.useEffect(() => {
     const load = async () => {
@@ -134,12 +187,10 @@ export default function Detail(props:any) {
         const images: any = await services.getFaces(data.id.S);
         const s3 = new S3Client({region: awsConfig.region, credentials: await Auth.currentCredentials()});
         const newListImages: any = [];
-        console.log(images);
         for (const image of images.data) {
-          console.log(image);
-          const command = new GetObjectCommand({Bucket: 'myrekognitioncollections', Key: image.name});
+          const command = new GetObjectCommand({Bucket: 'myrekognitioncollections', Key: image.externalImageId});
           const signedUrl = await getSignedUrl(s3, command, {expiresIn: 60*60*24});
-          newListImages.push({url: signedUrl});
+          newListImages.push({id: image.id, externalImageId: image.externalImageId, url: signedUrl});
         }
         setListImage(newListImages);
       }
@@ -200,11 +251,22 @@ export default function Detail(props:any) {
             </View>
           )
         }
-        <Button
-          title="Guardar"
-          color={'#ff9900'}
-          onPress={onSaveForm}
-        />
+        <View>
+          <Button
+            title="Guardar"
+            color={'#ff9900'}
+            onPress={onSaveForm}
+          />
+          {
+            props.route?.params.editMode &&
+            <TouchableOpacity
+              style={{marginTop: 20, borderWidth: 1, borderColor: '#ff9900', width: '100%', alignItems: 'center', alignSelf: 'center', paddingVertical: 5}}
+              onPress={onConfirmDelete}
+            >
+              <Text style={{color: '#ff9900', fontSize: 16}}>Eliminar</Text>
+            </TouchableOpacity>
+          }
+        </View>
         <View style={{paddingTop: 30}}/>
       </ScrollView>
     </SafeAreaView>
