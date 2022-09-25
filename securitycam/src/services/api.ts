@@ -50,6 +50,15 @@ const setNotificationsConfig = async (uuid: string | null, userId: string, body:
     return [];
 };
 
+const getNotifications = async (userId: string) => {
+    try {
+        return await axios.get(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}/list/${userId}`);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return { data: { Items: [] } };
+};
+
 const getFaces = async (peopleId: string) => {
     try {
         return await axios.get(`${endpoints.FACES_ENDPOINT}?peopleId=${peopleId}`);
@@ -101,14 +110,63 @@ const getRecords = async (clientId: string) => {
     return [];
 }
 
+const getRecord = async (recordId:string, clientId: string) => {
+    try {
+        const options: AxiosRequestConfig<any> = { 
+            headers: { "Content-Type": "application/json;charset=utf-8" },
+        };
+        return await axios.get(`${endpoints.ANALYSIS_ENDPOINT}/record/${recordId}/${clientId}`, options);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return {data: {}};
+}
+
+const removeRecord = async (recordId: string) => {
+    try {
+        const options: AxiosRequestConfig<any> = { 
+            headers: { "Content-Type": "application/json;charset=utf-8" }
+        };
+        return await axios.delete(`${endpoints.ANALYSIS_ENDPOINT}/record/${recordId}`, options);
+    } catch (err: any) {
+        console.log(err);
+    }
+};
+
+
+const getReports = async (clientId: string, endDate: string) => {
+    try {
+        const options: AxiosRequestConfig<any> = { 
+            headers: { "Content-Type": "application/json;charset=utf-8" },
+        };
+        return await axios.get(`${endpoints.REPORTS_ENDPOINT}/${clientId}/${endDate}`, options);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return {data: {}};
+}
+
+// const notificationsRegister = async (token: string) => {
+//     try {
+//         return await axios.post(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}/register`, {token});
+//     } catch (err: any) {
+//         console.log(err);
+//     }
+//     return [];
+// };
+
 export default {
     getPeople,
     setPeople,
     getNotificationsConfig,
+    getNotifications,
     setNotificationsConfig,
     getFaces,
     setFaces,
     removeFaces,
     removePeople,
-    getRecords
+    getRecords,
+    getRecord,
+    removeRecord,
+    getReports
 };

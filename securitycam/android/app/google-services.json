@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "850283013481",
-    "project_id": "notification-securitycam",
-    "storage_bucket": "notification-securitycam.appspot.com"
+    "project_number": "263039951236",
+    "project_id": "securitycam-79eb2",
+    "storage_bucket": "securitycam-79eb2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:850283013481:android:20628436517db21055c9f8",
+        "mobilesdk_app_id": "1:263039951236:android:563ac3f1b8bfd86ed0fdd1",
         "android_client_info": {
           "package_name": "com.securitycam"
         }
       },
       "oauth_client": [
         {
-          "client_id": "850283013481-g9u966d5op25kclac46ofdi6qe3g7g3s.apps.googleusercontent.com",
+          "client_id": "263039951236-c90l824k25b6go7d812rs2rt6uuvvj83.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCKn_yEulvpIijqHHk8HiDhtTP7ZLVe3vM"
+          "current_key": "AIzaSyDFk0b-JhUbPqlZu3NuL6bFJ0eiR0ZFiJ8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "850283013481-g9u966d5op25kclac46ofdi6qe3g7g3s.apps.googleusercontent.com",
+              "client_id": "263039951236-c90l824k25b6go7d812rs2rt6uuvvj83.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

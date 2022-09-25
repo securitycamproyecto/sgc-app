@@ -14,6 +14,8 @@ import { SettingContext } from '../context/SettingContext';
 import { Auth } from 'aws-amplify';
 import { Alert } from 'react-native';
 import services from '../services/api';
+import { requestUserPermission } from '../utils/pushnotification_helper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator();
 const SIZE_ICONS = 22;
@@ -39,13 +41,17 @@ const StackPrincipal = () => {
     const load = async () => {
       try {
         const { attributes } = await Auth.currentUserInfo();
+        await requestUserPermission();
         const notificationsConfig: any = await services.getNotificationsConfig(attributes.sub);
+        const token = await AsyncStorage.getItem("fcmtoken");
         if (notificationsConfig.data.Items.length === 0) {
           const newNotificationsConfigs = {
             uuid: null,
             authorized: '1',
             notAuthorized: '1',
-            unknown: '1'
+            unknown: '1',
+            token: token,
+            clientId: '68fdd0e1-7520-4fa4-969c-efe4f7cc31b2'
           };
           await services.setNotificationsConfig(null, attributes.sub, newNotificationsConfigs);
           setNotificationsSettings(newNotificationsConfigs);
@@ -56,8 +62,11 @@ const StackPrincipal = () => {
             uuid: options.id.S,
             authorized: options.authorized.S,
             notAuthorized: options.notAuthorized.S,
-            unknown: options.unknown.S
+            unknown: options.unknown.S,
+            token: token,
+            clientId: '68fdd0e1-7520-4fa4-969c-efe4f7cc31b2'
           };
+          await services.setNotificationsConfig(formattedOptions.uuid, attributes.sub, formattedOptions);
           setNotificationsSettings(formattedOptions);
         }
         setUserId(attributes.sub);

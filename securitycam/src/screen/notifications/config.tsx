@@ -44,7 +44,9 @@ const Config = () => {
     const body = {
       authorized: +options[0].isChecked + "",
       notAuthorized: +options[1].isChecked + "",
-      unknown: +options[2].isChecked + ""
+      unknown: +options[2].isChecked + "",
+      token: notificationsSettings.token,
+      clientId: notificationsSettings.clientId
     };
     try {
       await services.setNotificationsConfig(notificationsSettings.uuid, userId as unknown as string, body);

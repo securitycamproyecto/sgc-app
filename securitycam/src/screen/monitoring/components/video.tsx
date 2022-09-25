@@ -130,7 +130,7 @@ const VideoComponent = (props: any) => {
           <Text style={styles.colorText}>{time}</Text>
         </View>
         <View>
-          <TouchableOpacity onPress={() => props.navigation.navigate('DetailMonitoring', {title: 'Detalle en vivo'})}>
+          <TouchableOpacity onPress={() => props.navigation.navigate('DetailMonitoring', {title: 'Detalle en vivo', urlStream})}>
             <Ionicons name="eye" size={25} color="#fff"/>
           </TouchableOpacity>
         </View>

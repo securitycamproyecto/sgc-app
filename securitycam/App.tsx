@@ -19,17 +19,10 @@ import awsConfig from './awsConfig';
 import { withAuthenticator } from 'aws-amplify-react-native';
 import StackNavigator from './src/routes/StackPrincipal';
 import { SettingProvider } from './src/context/SettingContext';
-import { NotificationListener, requestUserPermission } from './src/utils/pushnotification_helper';
 
 Amplify.configure(awsConfig);
 
 const App = () => {
-
-  useEffect(() => {
-    requestUserPermission();
-    NotificationListener();
-  }, []);
-
   return (
     <SettingProvider>
       <StackNavigator />

@@ -12,8 +12,8 @@ function Separator(){
 
 const data = [
   {text: 'Sala'},
-  {text: 'Cochera'},
-  {text: 'Entrada'}
+  // {text: 'Cochera'},
+  // {text: 'Entrada'}
 ];
 
 export default function ListDevice() {

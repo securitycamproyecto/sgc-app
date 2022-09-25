@@ -1,4 +1,5 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useIsFocused } from "@react-navigation/native";
 import HeaderMainContextHook from '../../../hooks/HeaderMainContextHook';
 import ItemText from '../../../components/ItemText';
 // import { ISectionNotifications, data } from './IDetail';
@@ -41,6 +42,7 @@ const SectionNotifications = (props: any) => {
 
 const Detail = (props: any) => {
   HeaderMainContextHook({headerShown: false});
+  const isFocused = useIsFocused();
   const [data, setData] = React.useState<any>([{month: 'Últimos 7 días', records: []}])
 
   useEffect(() => {
@@ -49,13 +51,15 @@ const Detail = (props: any) => {
   }, [props.route?.params.title]);
 
   useEffect(() => {
-    const load = async () => {
-      const records = (await services.getRecords('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2') as any).data as Array<any>;
-      data[0].records = records.sort((x: any, y: any) => new Date(y.date).getTime() - new Date(x.date).getTime());
-      setData([...data]);
+    if (isFocused) {
+      const load = async () => {
+        const records = (await services.getRecords('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2') as any).data as Array<any>;
+        data[0].records = records.sort((x: any, y: any) => new Date(y.date).getTime() - new Date(x.date).getTime());
+        setData([...data]);
+      }
+      load();
     }
-    load();
-  }, [])
+  }, [isFocused])
 
   return (
     <View style={styles.container}>

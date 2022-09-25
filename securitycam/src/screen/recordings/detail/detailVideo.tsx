@@ -7,6 +7,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import awsConfig from '../../../../awsConfig';
 import { Auth } from 'aws-amplify';
+import services from './../../../services/api';
 import moment from 'moment';
 
 const DetailVideo = (props:any) => {
@@ -14,22 +15,38 @@ const DetailVideo = (props:any) => {
   const [clipUrl, setClipUrl] = useState('');
   HeaderMainContextHook({headerShown: false});
 
+  const loadRecord = async (recordId: string, clientId: string) => {
+    const result = await services.getRecord(recordId, clientId);
+    try {
+      const record = result.data[0];
+      if(record)
+        setDataDetailVideo(record);
+    } catch (err) { console.log(err) };
+  }
+
   useEffect(() => {
-    props.navigation.setOptions({title: props.route?.params.title || 'Loading...'});
-    setDataDetailVideo({...props.route.params});
+    props.navigation.setOptions({title: props.route?.params.title || 'Grabación'});
+    if (!props.route.params.recordId)
+      setDataDetailVideo({...props.route.params});
+    else {
+      loadRecord(props.route.params.recordId, props.route.params.clientId);
+    }
   }, [props.route?.params.title]);
 
   useEffect(() => {
     const load = async () => {
-      const s3 = new S3Client({region: awsConfig.region, credentials: await Auth.currentCredentials()});
-      const command = new GetObjectCommand({Bucket: 'myrekognitioncollections', Key: 'clip_' + dataDetailVideo.id});
-      const signedUrl = await getSignedUrl(s3, command, {expiresIn: 60*60*24});
-      setClipUrl(signedUrl);
+      try {
+        const s3 = new S3Client({region: awsConfig.region, credentials: await Auth.currentCredentials()});
+        const command = new GetObjectCommand({Bucket: 'myrekognitioncollections', Key: 'clip_' + dataDetailVideo.id});
+        const signedUrl = await getSignedUrl(s3, command, {expiresIn: 60*60*24});
+        setClipUrl(signedUrl);
+      } catch(err) { }
     }
     load();
   }, [dataDetailVideo])
 
-  const deleteVideo = () => {
+  const deleteVideo = async () => {
+    services.removeRecord(dataDetailVideo.id);
     props.navigation.goBack();
   };
 
@@ -45,18 +62,25 @@ const DetailVideo = (props:any) => {
         <Text style={{...styles.text, ...styles.textTitle, ...styles.shadow}}>Detalle de la identificación</Text>
         <View style={styles.separator}/>
         {
-          dataDetailVideo.label !== 'unknown' ?
-            <Text style={styles.text}>Identificación: {dataDetailVideo.similarity}% {dataDetailVideo.names.toLocaleUpperCase()}</Text>
-            :
-            <Text style={styles.text}>Identificación: desconocido</Text>
+          dataDetailVideo.id &&
+          <>
+            {
+              dataDetailVideo.label !== 'unknown' ?
+                <Text style={styles.text}>Identificación: {dataDetailVideo.similarity}% {dataDetailVideo.names.toLocaleUpperCase()}</Text>
+                :
+                <Text style={styles.text}>Identificación: desconocido</Text>
+            }
+            <Text style={styles.text}>Edad: 0 años (aprox.)</Text>
+            <Text style={styles.text}>Sexo: No definido</Text>
+            <Text style={styles.text}>Tiempo: {moment(dataDetailVideo.date).format('DD/MM/YYYY h:mm:ss a')}</Text>
+            <Text style={styles.text}>Alerta: {dataDetailVideo.type}</Text>
+            <TouchableOpacity style={{...styles.btnDelete, ...styles.shadow}} onPress={deleteVideo}>
+              <Ionicons name="trash-outline" size={35} color="#fff"/>
+            </TouchableOpacity>
+          </>
+          ||
+          <Text style={styles.text}>La grabación no se encuentra o ha sido eliminada</Text>
         }
-        <Text style={styles.text}>Edad: 0 años (aprox.)</Text>
-        <Text style={styles.text}>Sexo: </Text>
-        <Text style={styles.text}>Tiempo: {moment(dataDetailVideo.date).format('DD/MM/YYYY h:mm:ss a')}</Text>
-        <Text style={styles.text}>Alerta: {dataDetailVideo.type}</Text>
-        <TouchableOpacity style={{...styles.btnDelete, ...styles.shadow}} onPress={deleteVideo}>
-          <Ionicons name="trash-outline" size={35} color="#fff"/>
-        </TouchableOpacity>
     </View>
   );
 }
