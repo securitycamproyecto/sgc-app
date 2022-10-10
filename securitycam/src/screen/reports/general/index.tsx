@@ -40,17 +40,30 @@ export default function General(props:any) {
   const [calendar, setCalendar] = useState({show: false, value: Date.now()});
   const [reportData, setReportData] = useState({labels: ['none'], data: [0]});
   const [total, setTotal] = useState(0);
-  const onChangeCalendar = (newValue:any) => setCalendar((prev:any) => ({...prev, ...newValue}));
+
+  const loadReport = async (newValue = null) => {
+    if (newValue === calendar.value) return;
+    const date = moment(newValue || calendar.value).format('YYYY-MM-DD');
+    const result: any = await services.getReports('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2', date);
+    const labels = Object.keys(result.data).sort((x: any, y: any) => new Date(x).getTime() - new Date(y).getTime());
+    const data: Array<number> = [];
+    for (const label of labels) {
+      data.push(result.data[label])
+    }
+    if (labels.length === 0) labels.push(date);
+    if (data.length === 0) data.push(0);
+    setReportData({labels, data});
+    setTotal(data.reduce((x: any, y: any) => x + y, 0));
+  }
+
+  const onChangeCalendar = (newValue:any) => {
+    if (newValue.value)
+      loadReport(newValue.value);
+    setCalendar((prev:any) => ({...prev, ...newValue}));
+  }
 
   React.useEffect(() => {
-    const load = async () => {
-      const result = await services.getReports('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2', moment(calendar.value).format('DD-MM-YYYY'));
-      const labels: any = Object.keys(result.data);
-      const data: any = Object.values(result.data);
-      setReportData({labels, data});
-      setTotal(data.reduce((x: any, y: any) => x + y, 0));
-    }
-    load();
+    loadReport();
   }, []);
 
   return (

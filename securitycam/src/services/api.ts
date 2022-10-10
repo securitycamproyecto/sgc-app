@@ -134,17 +134,25 @@ const removeRecord = async (recordId: string) => {
 };
 
 
-const getReports = async (clientId: string, endDate: string) => {
+const getReports = async (clientId: string, startDate: string) => {
     try {
         const options: AxiosRequestConfig<any> = { 
             headers: { "Content-Type": "application/json;charset=utf-8" },
         };
-        return await axios.get(`${endpoints.REPORTS_ENDPOINT}/${clientId}/${endDate}`, options);
+        return await axios.get(`${endpoints.REPORTS_ENDPOINT}/${clientId}/${startDate}`, options);
     } catch (err: any) {
         console.log(err);
     }
     return {data: {}};
 }
+
+const requestSupport = async (body: any) => {
+    try {
+        return await axios.post(`${endpoints.SUPPORT_ENDPOINT}?userId=${body.userId}`, body);
+    } catch (err: any) {
+        console.log(err);
+    }
+};
 
 // const notificationsRegister = async (token: string) => {
 //     try {
@@ -168,5 +176,6 @@ export default {
     getRecords,
     getRecord,
     removeRecord,
-    getReports
+    getReports,
+    requestSupport
 };
