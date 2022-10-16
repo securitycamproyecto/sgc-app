@@ -13,7 +13,7 @@ export default function Detail(props:any) {
 
   return (
     <View style={styles.view}>
-      <View style={styles.groupHeader}>
+      {/* <View style={styles.groupHeader}>
         <View style={styles.headerPercentage}>
           <View style={styles.percentageBase}/>
           <Text style={{fontSize: 24, fontWeight: '600', color: '#333'}}>100%</Text>
@@ -46,7 +46,7 @@ export default function Detail(props:any) {
           <Text style={{color: '#343f4b'}}>3,05 GHz</Text>
         </View>
 
-      </View>
+      </View> */}
     </View>
   );
 }

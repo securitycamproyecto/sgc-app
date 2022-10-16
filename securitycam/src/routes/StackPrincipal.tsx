@@ -8,6 +8,9 @@ import Recordings from '../screen/recordings';
 import Manual from '../screen/help/manual';
 import Soporte from '../screen/help/soporte';
 import Notifications from '../screen/notifications';
+import Clients from '../screen/clients';
+import Users from '../screen/users';
+import Devices from '../screen/devices';
 import CustomDrawer from '../components/CustomDrawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SettingContext } from '../context/SettingContext';
@@ -33,14 +36,21 @@ const drawerMenuItems = [
   {name: 'Manual', title: 'Manual', icon:'notifications', component: Manual, ocult: true},
   {name: 'Soporte', title: 'Soporte', icon:'notifications', component: Soporte, ocult: true}
 ];
+const drawerAdminMenuItems = [
+  {name: 'Clients', title: 'Clientes', icon:'person', component: Clients},
+  {name: 'Users', title: 'Usuarios', icon:'people', component: Users},
+  {name: 'Devices', title: 'Dispositivos', icon:'videocam', component: Devices},
+];
 
 const StackPrincipal = () => {
   const { settings, setUserId, setNotificationsSettings } = React.useContext(SettingContext);
+  const [isAdmin, setIsAdmin] = React.useState<undefined|string>(undefined);
 
   React.useEffect(() => {
     const load = async () => {
       try {
         const { attributes } = await Auth.currentUserInfo();
+        setIsAdmin(attributes['custom:isUserAdmin']);
         await requestUserPermission();
         const notificationsConfig: any = await services.getNotificationsConfig(attributes.sub);
         const token = await AsyncStorage.getItem("fcmtoken");
@@ -79,26 +89,54 @@ const StackPrincipal = () => {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        initialRouteName="Monitoring"
-        drawerContent={props => <CustomDrawer {...props} drawerMenuItems={drawerMenuItems}/>}
-        screenOptions={{
-          headerTitle: settings.headerTitle,
-          headerShown: settings.headerShown,
-          headerRight: settings.headerComponent
-        }}
-      >
-        {
-          drawerMenuItems.map((item) =>
-            <Drawer.Screen name={item.name} component={item.component}
-              options={{
-                title: item.title,
-                drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>
-              }}
-            />
-          )
-        }
-      </Drawer.Navigator>
+      {
+        isAdmin != '1' ?
+        <React.Fragment>
+          <Drawer.Navigator
+            initialRouteName="Monitoring"
+            drawerContent={props => <CustomDrawer {...props} drawerMenuItems={drawerMenuItems} viewHelp={true}/>}
+            screenOptions={{
+              headerTitle: settings.headerTitle,
+              headerShown: settings.headerShown,
+              headerRight: settings.headerComponent
+            }}
+          >
+            {
+              drawerMenuItems.map((item) =>
+                <Drawer.Screen name={item.name} component={item.component}
+                  options={{
+                    title: item.title,
+                    drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>
+                  }}
+                />
+              )
+            }
+          </Drawer.Navigator>
+        </React.Fragment>
+        :
+        <React.Fragment>
+          <Drawer.Navigator
+            initialRouteName="Clients"
+            drawerContent={props => <CustomDrawer {...props} drawerMenuItems={drawerAdminMenuItems}/>}
+            screenOptions={{
+              headerTitle: settings.headerTitle,
+              headerShown: settings.headerShown,
+              headerRight: settings.headerComponent
+            }}
+          >
+            {
+              drawerAdminMenuItems.map((item) =>
+                <Drawer.Screen name={item.name} component={item.component}
+                  options={{
+                    title: item.title,
+                    drawerIcon: ({color}) => <Ionicons size={SIZE_ICONS} name={item.icon} color={color}/>
+                  }}
+                />
+              )
+            }
+          </Drawer.Navigator>
+        </React.Fragment>
+      }
     </NavigationContainer>
   );
 };

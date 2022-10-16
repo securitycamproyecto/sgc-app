@@ -142,7 +142,9 @@ const CustomDrawer = (props:any) => {
           ))
         }
       </DrawerContentScrollView>
-      <ViewHelp navigation={props.navigation}/>
+      {
+        props.viewHelp && <ViewHelp navigation={props.navigation}/>
+      }
       <View style={stylesBottom.view}>
         <TouchableOpacity onPress={signOut}>
           <View style={stylesBottom.itemList}>

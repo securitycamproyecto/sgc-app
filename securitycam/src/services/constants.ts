@@ -1,12 +1,14 @@
-const ROOT_ENDOPOINT = 'https://www.securitycamperu.com/';
-// const ROOT_ENDOPOINT = 'http://192.168.1.45:5001/';
+// const ROOT_ENDOPOINT = 'https://www.securitycamperu.com/';
+const ROOT_ENDOPOINT = 'http://192.168.1.45:5001/';
 
 const PEOPLE_ENDPOINT = `${ROOT_ENDOPOINT}people`;
+const CLIENTS_ENDPOINT = `${ROOT_ENDOPOINT}clients`;
 const NOTIFICATION_CONFIG_ENDPOINT = `${ROOT_ENDOPOINT}notifications-config`;
 const FACES_ENDPOINT = `${ROOT_ENDOPOINT}faces`;
 const ANALYSIS_ENDPOINT = `${ROOT_ENDOPOINT}analysis`;
 const REPORTS_ENDPOINT = `${ROOT_ENDOPOINT}reports`;
 const SUPPORT_ENDPOINT = `${ROOT_ENDOPOINT}support`;
+const USERS_ENDPOINT = `${ROOT_ENDOPOINT}users`;
 
 export default {
     ROOT_ENDOPOINT,
@@ -15,5 +17,7 @@ export default {
     FACES_ENDPOINT,
     ANALYSIS_ENDPOINT,
     REPORTS_ENDPOINT,
-    SUPPORT_ENDPOINT
+    SUPPORT_ENDPOINT,
+    CLIENTS_ENDPOINT,
+    USERS_ENDPOINT
 };

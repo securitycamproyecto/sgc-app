@@ -5,8 +5,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useIsFocused } from "@react-navigation/native";
 
 const images: string[] = [
-    'https://taktic.es/wp-content/uploads/2020/08/tendencias-tecnol%C3%B3gicas-2020.jpg',
-    'https://crehana-blog.imgix.net/media/filer_public/16/f1/16f1e973-b521-426f-a4e5-42d713854078/tendencias-tecnologicas-2021.jpg'
+  'https://i.ibb.co/pjPyLBQ/p1gf2s3j88k9r15a8boe1qs41mac4-0.jpg',
+  'https://i.ibb.co/vZR68Vp/p1gf2s3j88k9r15a8boe1qs41mac4-1.jpg',
+  'https://i.ibb.co/0BpFFTT/p1gf2s3j88k9r15a8boe1qs41mac4-2.jpg',
+  'https://i.ibb.co/31zs6xZ/p1gf2s3j88k9r15a8boe1qs41mac4-3.jpg',
+  'https://i.ibb.co/wRBJKfB/p1gf2s3j88k9r15a8boe1qs41mac4-4.jpg',
+  'https://i.ibb.co/hKLXpY9/p1gf2s3j88k9r15a8boe1qs41mac4-5.jpg',
+  'https://i.ibb.co/mFMTTBB/p1gf2s3j88k9r15a8boe1qs41mac4-6.jpg',
+  'https://i.ibb.co/4gLcxQW/p1gf2s3j88k9r15a8boe1qs41mac4-7.jpg',
+  'https://i.ibb.co/Z2y6x7h/p1gf2s3j88k9r15a8boe1qs41mac4-8.jpg'
 ];
 
 function Carrousel(props:{navigation:any}) {

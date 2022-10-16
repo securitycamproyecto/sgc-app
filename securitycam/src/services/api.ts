@@ -154,6 +154,43 @@ const requestSupport = async (body: any) => {
     }
 };
 
+const getClients = async () => {
+    try {
+        return await axios.get(`${endpoints.CLIENTS_ENDPOINT}`);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return {data: {}};
+};
+
+const setClients = async (update: boolean, body: any) => {
+    try {
+        if (update)
+            return await axios.put(`${endpoints.CLIENTS_ENDPOINT}`, body);
+        else 
+            return await axios.post(`${endpoints.CLIENTS_ENDPOINT}`, body);
+    } catch (err: any) {
+        console.log(err);
+    }
+};
+
+const removeClients = async (id: string | null) => {
+    try {
+        return await axios.delete(`${endpoints.CLIENTS_ENDPOINT}/${id}`);
+    } catch (err: any) {
+        console.log(err);
+    }
+};
+
+const getUsers = async () => {
+    try {
+        return await axios.get(`${endpoints.USERS_ENDPOINT}`);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return {data: {}};
+};
+
 // const notificationsRegister = async (token: string) => {
 //     try {
 //         return await axios.post(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}/register`, {token});
@@ -177,5 +214,9 @@ export default {
     getRecord,
     removeRecord,
     getReports,
-    requestSupport
+    requestSupport,
+    getClients,
+    setClients,
+    removeClients,
+    getUsers
 };
