@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SettingContext } from '../../context/SettingContext';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useIsFocused } from "@react-navigation/native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 

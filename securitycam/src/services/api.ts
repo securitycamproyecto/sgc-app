@@ -191,14 +191,50 @@ const getUsers = async () => {
     return {data: {}};
 };
 
-// const notificationsRegister = async (token: string) => {
-//     try {
-//         return await axios.post(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}/register`, {token});
-//     } catch (err: any) {
-//         console.log(err);
-//     }
-//     return [];
-// };
+const getDevices = async () => {
+    try {
+        return await axios.get(`${endpoints.DEVICES_ENDPOINT}`);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return {data: {Items: []}};
+};
+
+const getDevicesByClient = async (clientId: string) => {
+    try {
+        return await axios.get(`${endpoints.DEVICES_ENDPOINT}/${clientId}`);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return {data: {}};
+};
+
+const postDevices = async (body: any) => {
+    try {
+        return await axios.post(`${endpoints.DEVICES_ENDPOINT}`, body);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return { };
+};
+
+const putDevices = async (body: any) => {
+    try {
+        return await axios.put(`${endpoints.DEVICES_ENDPOINT}/${body.id}`, body);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return { };
+};
+
+const deleteDevices = async (body: any) => {
+    try {
+        return await axios.post(`${endpoints.DEVICES_ENDPOINT}/delete/${body.id}`, body);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return { };
+};
 
 export default {
     getPeople,
@@ -218,5 +254,10 @@ export default {
     getClients,
     setClients,
     removeClients,
-    getUsers
+    getUsers,
+    getDevices,
+    getDevicesByClient,
+    postDevices,
+    putDevices,
+    deleteDevices
 };

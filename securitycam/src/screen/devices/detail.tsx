@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, Button, Alert } from 'react-native';
 import { SettingContext } from '../../context/SettingContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useIsFocused } from "@react-navigation/native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Picker } from '@react-native-picker/picker';
+import Spinner from 'react-native-loading-spinner-overlay';
+import services from '../../services/api';
 
-const initForm = { name: '', ubication: '', clientId: '', model: '', serie: '' };
+const initForm: any = { name: '', location: '', clientId: '', model: '', serie: '', services: {} };
 
 export default function Detail(props:any) {
   const { setSettings } = React.useContext(SettingContext);
-  const [dataDevice, setDataDevice] = useState({...initForm});
+  const [dataDevice, setDataDevice] = useState<any>({...initForm});
+  const [dataClients, setDataClients] = useState<any>([]);
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const isFocused = useIsFocused();
-
-  const selectUser = () => {
-
-  }
 
   const setConfigScreen = () => {
     const { editMode } = props.route?.params;
@@ -24,31 +24,21 @@ export default function Detail(props:any) {
     });
   };
 
-  const onChange = (newValue:object) => setDataDevice((prev) => ({...prev, ...newValue}));
+  const onChange = (newValue:object) => setDataDevice((prev: any) => ({...prev, ...newValue}));
 
   const saveModeCreate = async () => {
-    // const result: any = await services.setPeople(null, {
-    //   names: dataDevice.names,
-    //   age: dataDevice.age,
-    //   authorized: +dataDevice.authorized + "",
-    //   clientId: "68fdd0e1-7520-4fa4-969c-efe4f7cc31b2"
-    // });
-    // Alert.alert('Persona registrada');
+    await services.postDevices(dataDevice);
+    Alert.alert('Dispositivo registrado');
   }
 
   const saveModeEdit = async () => {
-    // await services.setPeople(dataDevice.id, {
-    //   names: dataDevice.names,
-    //   age: dataDevice.age,
-    //   authorized: +dataDevice.authorized + "",
-    //   clientId: "68fdd0e1-7520-4fa4-969c-efe4f7cc31b2"
-    // });
-    // Alert.alert('Persona actualizada');
+    await services.putDevices(dataDevice);
+    Alert.alert('Dispositivo actualizado');
   };
 
   const isModelValid = () => {
     if (!dataDevice.name) return false;
-    if (!dataDevice.ubication) return false;
+    if (!dataDevice.location) return false;
     if (!dataDevice.clientId) return false;
     if (!dataDevice.model) return false;
     if (!dataDevice.serie) return false;
@@ -62,7 +52,9 @@ export default function Detail(props:any) {
       return;
     }
     try {
+      setShowSpinner(true);
       editMode ? await saveModeEdit() : await saveModeCreate();
+      setShowSpinner(false);
       props.navigation.goBack();
     } catch (err) {
       Alert.alert('Hubo un error al guardar');
@@ -85,25 +77,27 @@ export default function Detail(props:any) {
   }
 
   const onDelete = async () => {
-    // await services.removePeople(dataDevice.id);
-    // Alert.alert('Persona eliminada');
-    // props.navigation.goBack();
+    if (dataDevice.id === 'd1a552e7-27ff-42d3-95e1-a35c97c2c1b8') {
+      Alert.alert('Este dispositivo se encuentra protegido y no se puede eliminar');
+      return;
+    }
+    setShowSpinner(true);
+    await services.deleteDevices(dataDevice);
+    setShowSpinner(false);
+    Alert.alert('Dispositivo eliminado');
+    props.navigation.goBack();
   }
 
   React.useEffect(() => {
     const load = async () => {
       const { data } = props.route?.params;
-      console.log('===data===', data);
+      setShowSpinner(true);
       if (data) {
-        console.log('===data===', data);
-        // setDataDevice({
-        //   id: data.id.S,
-        //   names: data.names.S,
-        //   age: data.age.S,
-        //   authorized: data.authorized.S,
-        //   images: []
-        // });
+        setDataDevice(data);
       }
+      const clients = await services.getClients();
+      setDataClients(clients.data.Items || []);
+      setShowSpinner(false);
     }
     if (isFocused) {
       setSettings({
@@ -119,6 +113,11 @@ export default function Detail(props:any) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <Spinner
+        visible={showSpinner}
+        textContent={'Aplicando cambios...'}
+        // textStyle={styles.spinnerTextStyle}
+      />
       <ScrollView style={styles.view}>
         <View style={{paddingBottom: 30}}/>
         <Text style={{color: 'black', marginBottom: 20, fontWeight: '600'}}>Detalle y datos personales</Text>
@@ -128,11 +127,22 @@ export default function Detail(props:any) {
         </View>
         <View style={styles.groupInput}>
           <Text style={{color: 'black'}}>Ubicación</Text>
-          <TextInput placeholder='Ingrese ubicación' value={dataDevice.ubication} onChangeText={(value) => onChange({ubication: value})}/>
+          <TextInput placeholder='Ingrese ubicación' value={dataDevice.location} onChangeText={(value) => onChange({location: value})}/>
         </View>
         <View style={styles.groupInput}>
           <Text style={{color: 'black'}}>Cliente</Text>
-          <TextInput placeholder='' value={dataDevice.clientId} onChangeText={(value) => onChange({clientId: value})}/>
+          {/* <TextInput placeholder='' value={dataDevice.clientId} onChangeText={(value) => onChange({clientId: value})}/> */}
+          <Picker
+            selectedValue={dataDevice.clientId}
+            style={{ height: 50, width: 300 }}
+            onValueChange={(itemValue: any, itemIndex: number) => onChange({clientId: itemValue})}
+          >
+            {
+              dataClients.map((x: any) => 
+                <Picker.Item label={x.name.S} value={x.id.S} />
+              )
+            }
+          </Picker>
         </View>
         <View style={styles.groupInput}>
           <Text style={{color: 'black'}}>Modelo</Text>
@@ -142,7 +152,10 @@ export default function Detail(props:any) {
           <Text style={{color: 'black'}}>Serie</Text>
           <TextInput placeholder='Ingrese serie' value={dataDevice.serie} onChangeText={(value) => onChange({serie: value})}/>
         </View>
-        <View style={{marginVertical: 20}}>
+        <View style={{marginVertical: 7}}>
+          <Text style={{color: 'black'}}>Kinesis Video Stream : {dataDevice.services?.KinesisVideoStream?.name || '-'}</Text>
+        </View>
+        <View style={{marginVertical: 50}}>
           <Button
             title="Guardar"
             color={'#ff9900'}

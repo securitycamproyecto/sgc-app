@@ -7,17 +7,17 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import services from '../../services/api';
 
-interface IItemPerson {
+interface IItemDevice {
   data: any
   navigation: any
 }
 
-function ItemPerson(props:IItemPerson){
+function ItemDevice(props:IItemDevice){
   const { navigation, data } = props;
   return (
-    <TouchableOpacity style={styles.contentItem} onPress={() => navigation.navigate('DetailRegisterPeople', { editMode: true, data })}>
+    <TouchableOpacity style={styles.contentItem} onPress={() => navigation.navigate('DetailDevices', { editMode: true, data })}>
       {/* <Ionicons name={authorized ? 'checkmark-circle' : 'close-circle'} size={40} color={authorized ? 'green' : 'red'} /> */}
-      <Text style={styles.textItem}>{data.names.S}</Text>
+      <Text style={styles.textItem}>{data.name} - {data.location}</Text>
       <Ionicons style={styles.iconItem} name="chevron-forward" size={30} />
     </TouchableOpacity>
   );
@@ -30,8 +30,19 @@ export default function List(props:any) {
 
   React.useEffect(() => {
     const load = async () => {
-      const users = (await services.getPeople('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2') as any).data.Items as Array<any>;
-      setList(users);
+      const devices = await services.getDevices();
+      const formatDevices = devices.data.Items.map((x: any) => {
+        return {
+          id: x.id.S,
+          clientId: x.clientId.S,
+          name: x.name.S,
+          location: x.location.S,
+          model: x.model.S,
+          serie: x.serie.S,
+          services: JSON.parse(x.services.S || '{}')
+        }
+      });
+      setList(formatDevices);
     }
     if (isFocused) {
       setSettings({
@@ -42,7 +53,7 @@ export default function List(props:any) {
           </TouchableOpacity>,
         headerShown: true
       });
-      // load();
+      load();
     }
   }, [isFocused]);
 
@@ -52,7 +63,7 @@ export default function List(props:any) {
         data={list}
         ItemSeparatorComponent={() => <View style={{marginVertical: 15}} />}
         renderItem={({item, index}) =>
-          <ItemPerson data={item} navigation={props.navigation}/>
+          <ItemDevice data={item} navigation={props.navigation}/>
         }
       />
     </View>
