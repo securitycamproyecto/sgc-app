@@ -43,7 +43,7 @@ const drawerAdminMenuItems = [
 ];
 
 const StackPrincipal = () => {
-  const { settings, setUserId, setNotificationsSettings } = React.useContext(SettingContext);
+  const { settings, setUserId, setNotificationsSettings, setClientId } = React.useContext(SettingContext);
   const [isAdmin, setIsAdmin] = React.useState<undefined|string>(undefined);
 
   React.useEffect(() => {
@@ -52,6 +52,7 @@ const StackPrincipal = () => {
         const { attributes } = await Auth.currentUserInfo();
         setIsAdmin(attributes['custom:isUserAdmin']);
         await requestUserPermission();
+        const clientId = await services.getClientByUser(attributes.sub);
         const notificationsConfig: any = await services.getNotificationsConfig(attributes.sub);
         const token = await AsyncStorage.getItem("fcmtoken");
         if (notificationsConfig.data.Items.length === 0) {
@@ -61,7 +62,7 @@ const StackPrincipal = () => {
             notAuthorized: '1',
             unknown: '1',
             token: token,
-            clientId: '68fdd0e1-7520-4fa4-969c-efe4f7cc31b2'
+            clientId: clientId.data
           };
           await services.setNotificationsConfig(null, attributes.sub, newNotificationsConfigs);
           setNotificationsSettings(newNotificationsConfigs);
@@ -74,12 +75,14 @@ const StackPrincipal = () => {
             notAuthorized: options.notAuthorized.S,
             unknown: options.unknown.S,
             token: token,
-            clientId: '68fdd0e1-7520-4fa4-969c-efe4f7cc31b2'
+            clientId: clientId.data
           };
           await services.setNotificationsConfig(formattedOptions.uuid, attributes.sub, formattedOptions);
           setNotificationsSettings(formattedOptions);
         }
         setUserId(attributes.sub);
+        setClientId(clientId.data);
+        console.log('===STACK===', clientId.data, attributes.sub);
       } catch (err) {
         Alert.alert('Error al obtener configuración del usuario');
       }

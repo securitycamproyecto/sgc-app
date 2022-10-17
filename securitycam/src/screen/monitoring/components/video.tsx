@@ -42,67 +42,40 @@ const VideoComponent = (props: any) => {
     message: '',
     active: false
   });
-  let kinesisVideo;
-  let kinesisVideoArchivedContent: KinesisVideoArchivedMedia;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let player: Video | null = null;
+  const player = React.useRef<any>();
 
   useEffect(() => {
     const load = async () => {
+      const streamName = props.data.streamName;
+      console.log(streamName);
       let options = {
-        // accessKeyId: 's0BjAnqwjj82IwYipebYKg8+9dVPxi/Q7tQ1sXFI',
-        // secretAccessKey: 'AKIASA3V2VWZFEN4AA7T',
-        // sessionToken: undefined,
         region: awsConfig.region,
         credentials: await Auth.currentCredentials()
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      kinesisVideo = new KinesisVideo(options);
-      kinesisVideo.getDataEndpoint(
-        {
-          StreamName: 'MyKVStream',
-          APIName: 'GET_HLS_STREAMING_SESSION_URL'
-        },
-        (err: any, response: any) => {
-          if (err) {
-            onChangeError({message: err, active: true});
-            setLoading(false);
-            return console.error('YIYO', err);
-          }
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          kinesisVideoArchivedContent = new KinesisVideoArchivedMedia({
-            ...options,
-            endpoint: response.DataEndpoint
-          });
-          kinesisVideoArchivedContent.getHLSStreamingSessionURL(
-            {
-              StreamName: 'MyKVStream',
-              PlaybackMode: 'LIVE',
-              HLSFragmentSelector: {
-                FragmentSelectorType: 'SERVER_TIMESTAMP'
-              },
-              ContainerFormat: 'FRAGMENTED_MP4',
-              DiscontinuityMode: 'ALWAYS',
-              DisplayFragmentTimestamp: 'NEVER',
-              Expires: 43200
+      try {
+        const kinesisVideo = new KinesisVideo(options);
+        const kinesisVideoResponse = await kinesisVideo.getDataEndpoint({StreamName: streamName, APIName: 'GET_HLS_STREAMING_SESSION_URL'});
+        const kinesisVideoArchivedContent = new KinesisVideoArchivedMedia({...options, endpoint: kinesisVideoResponse.DataEndpoint});
+        const kinesisVideoArchivedContentResponse = await kinesisVideoArchivedContent.getHLSStreamingSessionURL({
+            StreamName: streamName,
+            PlaybackMode: 'LIVE',
+            HLSFragmentSelector: {
+              FragmentSelectorType: 'SERVER_TIMESTAMP'
             },
-            (err2, response2: any) => {
-              if (err2) {
-                setLoading(false);
-                onChangeError({message: err2, active: true});
-                return console.error('NERDS', err2);
-              }
-              console.log(
-                'HLS Streaming Session URL: ' +
-                  response2.HLSStreamingSessionURL,
-              );
-              setUrlStream(response2.HLSStreamingSessionURL);
-              onChangeError({message: '', active: false});
-              setLoading(false);
-            }
-          );
-        }
-      );
+            ContainerFormat: 'FRAGMENTED_MP4',
+            DiscontinuityMode: 'ALWAYS',
+            DisplayFragmentTimestamp: 'NEVER',
+            Expires: 43200
+        });
+        console.log('===kinesisVideoArchivedContentResponse.HLSStreamingSessionURL===', kinesisVideoArchivedContentResponse.HLSStreamingSessionURL)
+        setUrlStream(kinesisVideoArchivedContentResponse.HLSStreamingSessionURL || '');
+        onChangeError({message: '', active: false});
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        onChangeError({message: err, active: true});
+        setLoading(false);
+      }
     };
     load();
   }, []);
@@ -124,7 +97,7 @@ const VideoComponent = (props: any) => {
   return (
     <View style={styles.view}>
       <View style={{...styles.headerVideo, ...styles.shadow}}>
-        <Text style={styles.colorText}>Cochera</Text>
+        <Text style={[styles.colorText, {width: 140}]} numberOfLines={1} ellipsizeMode={'tail'}>{props.data.name} - {props.data.location}</Text>
         <View style={styles.timeHeader}>
           <Text style={{...styles.colorText, marginRight: 15}}>{new Date().toLocaleDateString("es-ES", optionsDate as any)}</Text>
           <Text style={styles.colorText}>{time}</Text>
@@ -143,10 +116,12 @@ const VideoComponent = (props: any) => {
             <VideoNotWorking />
           ) : (
             <Video
+              key={props.id}
+              playWhenInactive={true}
+              useTextureView={false}
+              playInBackground={true}
+              disableFocus={true}
               source={{uri: urlStream}}
-              ref={ref => {
-                player = ref;
-              }}
               controls
               posterResizeMode="cover"
               resizeMode="cover"
@@ -162,7 +137,7 @@ const VideoComponent = (props: any) => {
 const styles = StyleSheet.create({
   view: {
     width: Dimensions.get('window').width - 50,
-    height: 300
+    height: 260
   },
   headerVideo: {
     height: 40,

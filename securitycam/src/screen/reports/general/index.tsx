@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import services from '../../../services/api';
 import { Picker } from '@react-native-picker/picker';
+import { SettingContext } from '../../../context/SettingContext';
 
 const data = {
   labels: ["January", "February", "March", "April", "May", "June"],
@@ -37,6 +38,7 @@ export default function General(props:any) {
     headerComponent: () => null,
     headerShown: true
   });
+  const { clientId } = React.useContext(SettingContext);
   const [calendar, setCalendar] = useState({show: false, value: Date.now()});
   const [reportData, setReportData] = useState({labels: ['none'], data: [0]});
   const [total, setTotal] = useState(0);
@@ -44,7 +46,7 @@ export default function General(props:any) {
   const loadReport = async (newValue = null) => {
     if (newValue === calendar.value) return;
     const date = moment(newValue || calendar.value).format('YYYY-MM-DD');
-    const result: any = await services.getReports('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2', date);
+    const result: any = await services.getReports(clientId, date);
     const labels = Object.keys(result.data).sort((x: any, y: any) => new Date(x).getTime() - new Date(y).getTime());
     const data: Array<number> = [];
     for (const label of labels) {

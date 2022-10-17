@@ -18,9 +18,11 @@ const notificationsSettingsDefault = {
 
 export const SettingContext = createContext({
     userId: null,
+    clientId: null,
     settings: settingDefault,
     notificationsSettings: notificationsSettingsDefault,
     setUserId: (userId?: any) => {},
+    setClientId: (clientId?: any) => {},
     setSettings: (setting?: any) => {},
     setNotificationsSettings: (notificationsSettings?: any) => {}
 });
@@ -28,14 +30,17 @@ export const SettingContext = createContext({
 export const SettingProvider = ({ children }: { children: JSX.Element }) => {
     const [settings, setSettings] = useState(settingDefault);
     const [userId, setUserId] = useState(null);
+    const [clientId, setClientId] = useState(null);
     const [notificationsSettings, setNotificationsSettings] = useState(notificationsSettingsDefault);
 
     return (
         <SettingContext.Provider value={{
             userId,
+            clientId,
             settings,
             notificationsSettings,
             setUserId,
+            setClientId,
             setSettings,
             setNotificationsSettings
         }}>

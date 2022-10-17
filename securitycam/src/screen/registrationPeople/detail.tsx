@@ -43,7 +43,7 @@ const selectImage = async (setImage: React.Dispatch<React.SetStateAction<any>>) 
 const initForm = { authorized: false, age: "", names: "", id: null };
 
 export default function Detail(props:any) {
-  const { setSettings } = React.useContext(SettingContext);
+  const { setSettings, clientId } = React.useContext(SettingContext);
   const [dataUser, setDataUser] = useState({...initForm, images: [], authorized: props.route?.params.authorized});
   const [listImage, setListImage] = useState<any[]>([]);
   const [listRemoveImage, setListRemoveImage] = useState<any[]>([]);
@@ -79,14 +79,14 @@ export default function Detail(props:any) {
       names: dataUser.names,
       age: dataUser.age,
       authorized: +dataUser.authorized + "",
-      clientId: "68fdd0e1-7520-4fa4-969c-efe4f7cc31b2"
+      clientId: clientId
     });
     for (const image of listImage) {
       if (image.uri)
         await services.setFaces({
           "image": image,
           "peopleId": result.data.uuid,
-          "clientId": "68fdd0e1-7520-4fa4-969c-efe4f7cc31b2",
+          "clientId": clientId,
           "collection": "MyCollection",
           "bucket": "myrekognitioncollections"
         });
@@ -99,14 +99,14 @@ export default function Detail(props:any) {
       names: dataUser.names,
       age: dataUser.age,
       authorized: +dataUser.authorized + "",
-      clientId: "68fdd0e1-7520-4fa4-969c-efe4f7cc31b2"
+      clientId: clientId
     });
     for (const image of listImage) {
       if (image.uri)
         await services.setFaces({
           "image": image,
           "peopleId": dataUser.id,
-          "clientId": "68fdd0e1-7520-4fa4-969c-efe4f7cc31b2",
+          "clientId": clientId,
           "collection": "MyCollection",
           "bucket": "myrekognitioncollections"
         });

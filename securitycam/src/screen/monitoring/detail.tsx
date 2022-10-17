@@ -4,6 +4,7 @@ import * as React from 'react';
 import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import Video from 'react-native-video';
 import io from 'socket.io-client';
+import { SettingContext } from '../../context/SettingContext';
 import HeaderMainContextHook from '../../hooks/HeaderMainContextHook';
 
 const screenWidth = Dimensions.get('window').width;
@@ -12,6 +13,7 @@ const screenHeight = Dimensions.get('window').height;
 const MonitoringDetail = (props: any) => {
     HeaderMainContextHook({headerShown: false});
     const [messages, setMessages] = React.useState<Array<string>>([]);
+    const { clientId } = React.useContext(SettingContext);
     const socketRef = React.useRef<any>();
     let playerDetail: Video | null = null;
 
@@ -22,7 +24,7 @@ const MonitoringDetail = (props: any) => {
 
     React.useEffect(() => {
         socketRef.current = io('https://acme-socket.securitycamperu.com');
-        socketRef.current.on(`message-68fdd0e1-7520-4fa4-969c-efe4f7cc31b2`, (args: any) => {
+        socketRef.current.on(`message-${clientId}`, (args: any) => {
             if (messages.length > 9) {
                 let temp = [...messages];
                 temp.shift();

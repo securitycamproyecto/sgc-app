@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import endpoints from './constants';
 //import RNFetchBlob from 'rn-fetch-blob';
 
-const getPeople = async (clientId: string) => {
+const getPeople = async (clientId: string | null) => {
     try {
         return await axios.get(`${endpoints.PEOPLE_ENDPOINT}?clientId=${clientId}`);
     } catch (err: any) {
@@ -98,7 +98,7 @@ const removeFaces = async (body: any) => {
     return [];
 };
 
-const getRecords = async (clientId: string) => {
+const getRecords = async (clientId: string | null) => {
     try {
         const options: AxiosRequestConfig<any> = { 
             headers: { "Content-Type": "application/json;charset=utf-8" },
@@ -134,7 +134,7 @@ const removeRecord = async (recordId: string) => {
 };
 
 
-const getReports = async (clientId: string, startDate: string) => {
+const getReports = async (clientId: string | null, startDate: string) => {
     try {
         const options: AxiosRequestConfig<any> = { 
             headers: { "Content-Type": "application/json;charset=utf-8" },
@@ -157,6 +157,15 @@ const requestSupport = async (body: any) => {
 const getClients = async () => {
     try {
         return await axios.get(`${endpoints.CLIENTS_ENDPOINT}`);
+    } catch (err: any) {
+        console.log(err);
+    }
+    return {data: {}};
+};
+
+const getClientByUser = async (userId: string) => {
+    try {
+        return await axios.get(`${endpoints.CLIENTS_ENDPOINT}/${userId}`);
     } catch (err: any) {
         console.log(err);
     }
@@ -200,13 +209,13 @@ const getDevices = async () => {
     return {data: {Items: []}};
 };
 
-const getDevicesByClient = async (clientId: string) => {
+const getDevicesByClient = async (clientId: string | null) => {
     try {
         return await axios.get(`${endpoints.DEVICES_ENDPOINT}/${clientId}`);
     } catch (err: any) {
         console.log(err);
     }
-    return {data: {}};
+    return {data: {Items: []}};
 };
 
 const postDevices = async (body: any) => {
@@ -252,6 +261,7 @@ export default {
     getReports,
     requestSupport,
     getClients,
+    getClientByUser,
     setClients,
     removeClients,
     getUsers,

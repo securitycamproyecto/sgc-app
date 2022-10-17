@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import { SettingContext } from '../../context/SettingContext';
 import { useIsFocused } from "@react-navigation/native";
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -25,13 +25,13 @@ function ItemPerson(props:IItemPerson){
 }
 
 export default function List(props:any) {
-  const { setSettings } = React.useContext(SettingContext);
+  const { setSettings, clientId } = React.useContext(SettingContext);
   const [list, setList] = useState([] as any[]);
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
     const load = async () => {
-      const users = (await services.getPeople('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2') as any).data.Items as Array<any>;
+      const users = (await services.getPeople(clientId) as any).data.Items as Array<any>;
       const filterUsers = users.filter((x) => x.authorized.S == +props.params?.authorize);
       setList(filterUsers);
     }
@@ -49,7 +49,7 @@ export default function List(props:any) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={list}
         ItemSeparatorComponent={() => <View style={{marginVertical: 15}} />}
@@ -57,7 +57,7 @@ export default function List(props:any) {
           <ItemPerson data={item} navigation={props.navigation}/>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

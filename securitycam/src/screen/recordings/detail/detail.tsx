@@ -6,6 +6,7 @@ import ItemText from '../../../components/ItemText';
 import React, { useEffect } from 'react';
 import moment from 'moment';
 import services from '../../../services/api';
+import { SettingContext } from '../../../context/SettingContext';
 
 function Separator(){
   return (
@@ -43,7 +44,8 @@ const SectionNotifications = (props: any) => {
 const Detail = (props: any) => {
   HeaderMainContextHook({headerShown: false});
   const isFocused = useIsFocused();
-  const [data, setData] = React.useState<any>([{month: 'Últimos 7 días', records: []}])
+  const { clientId } = React.useContext(SettingContext);
+  const [data, setData] = React.useState<any>([{month: 'Últimos 7 días', records: []}]);
 
   useEffect(() => {
     props.navigation.setOptions({title: props.route?.params.title || 'Loading...'});
@@ -53,7 +55,7 @@ const Detail = (props: any) => {
   useEffect(() => {
     if (isFocused) {
       const load = async () => {
-        const records = (await services.getRecords('68fdd0e1-7520-4fa4-969c-efe4f7cc31b2') as any).data as Array<any>;
+        const records = (await services.getRecords(clientId) as any).data as Array<any>;
         data[0].records = records.sort((x: any, y: any) => new Date(y.date).getTime() - new Date(x.date).getTime());
         setData([...data]);
       }

@@ -7,12 +7,12 @@ import services from '../../services/api';
 
 export default function Soporte(){
   HeaderMainContextHook({headerShown: true, headerTitle: 'Soporte del Aplicativo', headerComponent: () => null});
-  const { userId } = React.useContext(SettingContext);
+  const { userId, clientId } = React.useContext(SettingContext);
   const [text, setText] = React.useState('');
 
   const requestSupport = async () => {
     const body = {
-      clientId: '68fdd0e1-7520-4fa4-969c-efe4f7cc31b2',
+      clientId: clientId,
       userId,
       body: text
     }
