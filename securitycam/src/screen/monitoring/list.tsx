@@ -34,6 +34,7 @@ function Monitoring() {
       const formatedDevices = devices.data.Items.map((x: any) => {
         return {
           streamName: JSON.parse(x.services.S).KinesisVideoStream?.name,
+          id: x.id.S,
           name: x.name.S,
           location: x.location.S
         }

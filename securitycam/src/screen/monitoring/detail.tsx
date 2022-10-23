@@ -24,7 +24,9 @@ const MonitoringDetail = (props: any) => {
 
     React.useEffect(() => {
         socketRef.current = io('https://acme-socket.securitycamperu.com');
-        socketRef.current.on(`message-${clientId}`, (args: any) => {
+        console.log(`message-${clientId}-${props.route?.params.deviceId}`);
+        socketRef.current.on(`message-${clientId}-${props.route?.params.deviceId}`, (args: any) => {
+            console.log('aa');
             if (messages.length > 9) {
                 let temp = [...messages];
                 temp.shift();
@@ -41,14 +43,14 @@ const MonitoringDetail = (props: any) => {
     }, [messages])
 
     return (
-        <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <View style={{flex: 1, backgroundColor: '#000'}}>
             <Video
                 // source={{uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'}}
                 source={{uri: props.route?.params.urlStream}}
                 ref={ref => {
                     playerDetail = ref;
                 }}
-                resizeMode="stretch"
+                // resizeMode="contain"
                 // fullscreen={true}
                 // fullscreenOrientation={'landscape'}
                 style={styles.video}
@@ -72,8 +74,8 @@ const styles = StyleSheet.create({
         top: 0,
         bottom: 0,
         right: 0,
-        left : -screenWidth/2 ,
-        width : screenHeight,
+        left : -(screenWidth/2 - 50),
+        width : screenHeight - 100,
         transform: [{ rotate: "90deg" }]
     },
     box: {

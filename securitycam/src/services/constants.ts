@@ -1,5 +1,5 @@
-// const ROOT_ENDOPOINT = 'https://www.securitycamperu.com/';
-const ROOT_ENDOPOINT = 'http://192.168.1.45:5001/';
+const ROOT_ENDOPOINT = 'https://www.securitycamperu.com/';
+// const ROOT_ENDOPOINT = 'http://192.168.1.45:5001/';
 
 const PEOPLE_ENDPOINT = `${ROOT_ENDOPOINT}people`;
 const CLIENTS_ENDPOINT = `${ROOT_ENDOPOINT}clients`;

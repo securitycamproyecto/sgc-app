@@ -6,21 +6,11 @@ import DatePicker from '../../../components/DatePicker';
 import { LineChart } from "react-native-chart-kit";
 import React, { useState } from 'react';
 import moment from 'moment';
-import services from '../../../services/api';
 import { Picker } from '@react-native-picker/picker';
 import { SettingContext } from '../../../context/SettingContext';
-
-const data = {
-  labels: ["January", "February", "March", "April", "May", "June"],
-  datasets: [
-    {
-      data: [20, 45, 28, 80, 99, 43],
-      color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-      strokeWidth: 2 // optional
-    },
-  ],
-  legend: ["Sala"] // optional
-};
+import { useIsFocused } from "@react-navigation/native";
+import Spinner from 'react-native-loading-spinner-overlay';
+import services from '../../../services/api';
 
 const chartConfig = {
   backgroundColor: "#00",
@@ -41,12 +31,17 @@ export default function General(props:any) {
   const { clientId } = React.useContext(SettingContext);
   const [calendar, setCalendar] = useState({show: false, value: Date.now()});
   const [reportData, setReportData] = useState({labels: ['none'], data: [0]});
+  const [devices, setDevices] = useState<any>([]);
+  const [selectDevice, setSelectDevice] = useState<any>({id: null, name: ''});
   const [total, setTotal] = useState(0);
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
+  const isFocused = useIsFocused();
 
-  const loadReport = async (newValue = null) => {
-    if (newValue === calendar.value) return;
+  const loadReport = async (newValue: any = null, deviceId: string = '') => {
+    if (newValue === calendar.value && deviceId === selectDevice.id) return;
+    setShowSpinner(true);
     const date = moment(newValue || calendar.value).format('YYYY-MM-DD');
-    const result: any = await services.getReports(clientId, date);
+    const result: any = await services.getReports(clientId, deviceId || selectDevice.id, date);
     const labels = Object.keys(result.data).sort((x: any, y: any) => new Date(x).getTime() - new Date(y).getTime());
     const data: Array<number> = [];
     for (const label of labels) {
@@ -56,20 +51,39 @@ export default function General(props:any) {
     if (data.length === 0) data.push(0);
     setReportData({labels, data});
     setTotal(data.reduce((x: any, y: any) => x + y, 0));
+    setShowSpinner(false);
   }
 
-  const onChangeCalendar = (newValue:any) => {
+  const onChangeCalendar = (newValue: any) => {
     if (newValue.value)
-      loadReport(newValue.value);
+      loadReport(newValue.value, selectDevice.id);
     setCalendar((prev:any) => ({...prev, ...newValue}));
   }
 
   React.useEffect(() => {
-    loadReport();
-  }, []);
+    const load = async () => {
+      setShowSpinner(true);
+      const devices = await services.getDevicesByClient(clientId);
+      setShowSpinner(false);
+      const formatedDevices = devices.data.Items.map((x: any) => {
+        return {
+          id: x.id.S,
+          name: x.name.S,
+          location: x.location.S
+        }
+      });
+      setDevices(formatedDevices);
+      setSelectDevice(formatedDevices[0]);
+      loadReport();
+    }
+    if (isFocused) load();
+  }, [isFocused])
 
   return (
     <ScrollView style={styles.container}>
+      <Spinner
+        visible={showSpinner}
+      />
       <TouchableOpacity style={styles.calendar} onPress={() => onChangeCalendar({show: true})}>
         <Ionicons name="calendar" size={35} color="#333" style={{paddingRight: 10}}/>
         <Text style={{color: '#333'}}>{moment(calendar.value).format('MMM DD, YYYY')}</Text>
@@ -77,17 +91,19 @@ export default function General(props:any) {
       { calendar.show && <DatePicker onChange={(value) => onChangeCalendar({show: false, value}) }/> }
       <View style={styles.group}>
         <View style={{...styles.groupDescription, ...styles.borderGroup, ...styles.shadow}}>
-          <Picker>
-            <Picker.Item label="Sala" value="sala" />
+          <Picker
+            selectedValue={selectDevice}
+            style={{ height: 50, width: 300 }}
+            onValueChange={(itemValue: any, itemIndex: number) => {
+              setSelectDevice(itemValue); loadReport(calendar.value, itemValue.id)
+            }}
+          >
+            {
+              devices.map((x: any) => 
+                <Picker.Item label={x.name} value={x} />
+              )
+            }
           </Picker>
-          {/* <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text>Cochera</Text>
-            <View style={{borderColor: 'rgba(134, 65, 244, 1)', borderWidth: 0.5, width: '50%', height: 1, marginLeft: 'auto'}}/>
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text>Sala</Text>
-            <View style={{borderColor: 'rgba(50, 205, 50, 1)', borderWidth: 0.5, width: '50%', height: 1, marginLeft: 'auto'}}/>
-          </View> */}
         </View>
         <View style={{...styles.groupTotal, ...styles.borderGroup, ...styles.shadow}}>
           <Ionicons name="git-branch" size={25} color="#333" style={{position: 'absolute', left: 6, top: 6}}/>
@@ -107,7 +123,7 @@ export default function General(props:any) {
               strokeWidth: 2 // optional
             },
           ],
-          legend: ["Sala"] // optional
+          legend: [selectDevice.name] // optional
         }}
         height={256}
         width={Dimensions.get('screen').width - 30}

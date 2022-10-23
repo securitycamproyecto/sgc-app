@@ -56,7 +56,9 @@ const Detail = (props: any) => {
     if (isFocused) {
       const load = async () => {
         const records = (await services.getRecords(clientId) as any).data as Array<any>;
-        data[0].records = records.sort((x: any, y: any) => new Date(y.date).getTime() - new Date(x.date).getTime());
+        data[0].records = records
+                          .filter(x => x.deviceId === props.route?.params.id)
+                          .sort((x: any, y: any) => new Date(y.date).getTime() - new Date(x.date).getTime());
         setData([...data]);
       }
       load();

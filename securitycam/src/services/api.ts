@@ -134,12 +134,12 @@ const removeRecord = async (recordId: string) => {
 };
 
 
-const getReports = async (clientId: string | null, startDate: string) => {
+const getReports = async (clientId: string | null, deviceId: string, startDate: string) => {
     try {
         const options: AxiosRequestConfig<any> = { 
             headers: { "Content-Type": "application/json;charset=utf-8" },
         };
-        return await axios.get(`${endpoints.REPORTS_ENDPOINT}/${clientId}/${startDate}`, options);
+        return await axios.get(`${endpoints.REPORTS_ENDPOINT}/${clientId}/${deviceId}/${startDate}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -198,6 +198,14 @@ const getUsers = async () => {
         console.log(err);
     }
     return {data: {}};
+};
+
+const deleteUsers = async (username: string) => {
+    try {
+        return await axios.post(`${endpoints.USERS_ENDPOINT}/${username}`);
+    } catch (err: any) {
+        console.log(err);
+    }
 };
 
 const getDevices = async () => {
@@ -269,5 +277,6 @@ export default {
     getDevicesByClient,
     postDevices,
     putDevices,
-    deleteDevices
+    deleteDevices,
+    deleteUsers
 };

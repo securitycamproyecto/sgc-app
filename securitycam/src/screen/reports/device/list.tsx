@@ -2,6 +2,7 @@ import { View, FlatList, StyleSheet } from 'react-native';
 import { SettingContext } from '../../../context/SettingContext';
 import { useIsFocused } from "@react-navigation/native";
 import ItemDevice from '../../../components/ItemList';
+import services from '../../../services/api';
 import React from 'react';
 
 function Separator(){
@@ -10,30 +11,43 @@ function Separator(){
   );
 }
 
-const data = [
-  {text: 'Sala'},
-  // {text: 'Cochera'},
-  // {text: 'Entrada'}
-];
-
 export default function ListDevice() {
-  const { setSettings } = React.useContext(SettingContext);
+  const { setSettings, clientId } = React.useContext(SettingContext);
+  const [devices, setDevices] = React.useState<any>([]);
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
-    if (isFocused){
+    const load = async () => {
+      const devices = await services.getDevicesByClient(clientId);
+      const formatedDevices = devices.data.Items.map((x: any) => {
+        return {
+          streamName: JSON.parse(x.services.S).KinesisVideoStream?.name,
+          name: x.name.S,
+          location: x.location.S,
+          model: x.model.S,
+          serie: x.serie.S,
+        }
+      });
+      setDevices(formatedDevices);
+    }
+    if (isFocused) {
       setSettings({
         headerTitle: 'Dispositivos',
         headerComponent: () => null,
         headerShown: true
       });
+      load();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   return (
     <View style={styles.container}>
-      <FlatList ItemSeparatorComponent={() => <Separator />} data={data} renderItem={({item}) => <ItemDevice text={item.text} nameNavigate="DetailDevice" params={{title: item.text}}/>}/>
+      <FlatList 
+        ItemSeparatorComponent={() => <Separator />} 
+        data={devices} 
+        renderItem={({item}) => 
+          <ItemDevice text={item.name + ' - ' + item.location} nameNavigate="DetailDevice" params={{title: item.name, ...item}}/>
+        }/>
     </View>
   );
 }
