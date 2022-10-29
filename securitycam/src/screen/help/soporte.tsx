@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Linking, Alert } f
 import HeaderMainContextHook from '../../hooks/HeaderMainContextHook';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SettingContext } from '../../context/SettingContext';
+import { Auth } from 'aws-amplify';
 import services from '../../services/api';
 
 export default function Soporte(){
@@ -11,9 +12,11 @@ export default function Soporte(){
   const [text, setText] = React.useState('');
 
   const requestSupport = async () => {
+    const userInfo = await Auth.currentUserInfo();
     const body = {
       clientId: clientId,
       userId,
+      username: userInfo.username,
       body: text
     }
     await services.requestSupport(body);

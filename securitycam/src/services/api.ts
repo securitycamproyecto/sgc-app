@@ -1,10 +1,19 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import endpoints from './constants';
+import { Auth } from 'aws-amplify';
 //import RNFetchBlob from 'rn-fetch-blob';
+
+const getRequestHeader = async () => {
+    const session = await Auth.currentSession();
+    return { "Content-Type": "application/json;charset=utf-8", "Authorization": `Bearer ${session.getAccessToken().getJwtToken()}` }
+}
 
 const getPeople = async (clientId: string | null) => {
     try {
-        return await axios.get(`${endpoints.PEOPLE_ENDPOINT}?clientId=${clientId}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.PEOPLE_ENDPOINT}?clientId=${clientId}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -13,7 +22,10 @@ const getPeople = async (clientId: string | null) => {
 
 const setPeople = async (uuid: string | null, body: any) => {
     try {
-        return await axios.post(`${endpoints.PEOPLE_ENDPOINT}?uuid=${uuid}`, body);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.post(`${endpoints.PEOPLE_ENDPOINT}?uuid=${uuid}`, body, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -23,7 +35,7 @@ const setPeople = async (uuid: string | null, body: any) => {
 const removePeople = async (id: string | null) => {
     try {
         const options: AxiosRequestConfig<any> = { 
-            headers: { "Content-Type": "application/json;charset=utf-8" }
+            headers: await getRequestHeader()
         };
         return await axios.delete(`${endpoints.PEOPLE_ENDPOINT}/${id}`, options);
     } catch (err: any) {
@@ -34,7 +46,10 @@ const removePeople = async (id: string | null) => {
 
 const getNotificationsConfig = async (userId: string) => {
     try {
-        return await axios.get(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}?userId=${userId}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}?userId=${userId}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -43,7 +58,10 @@ const getNotificationsConfig = async (userId: string) => {
 
 const setNotificationsConfig = async (uuid: string | null, userId: string, body: any) => {
     try {
-        return await axios.post(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}?uuid=${uuid}&userId=${userId}`, body);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.post(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}?uuid=${uuid}&userId=${userId}`, body, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -52,7 +70,10 @@ const setNotificationsConfig = async (uuid: string | null, userId: string, body:
 
 const getNotifications = async (userId: string) => {
     try {
-        return await axios.get(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}/list/${userId}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.NOTIFICATION_CONFIG_ENDPOINT}/list/${userId}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -61,7 +82,10 @@ const getNotifications = async (userId: string) => {
 
 const getFaces = async (peopleId: string) => {
     try {
-        return await axios.get(`${endpoints.FACES_ENDPOINT}?peopleId=${peopleId}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.FACES_ENDPOINT}?peopleId=${peopleId}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -70,15 +94,14 @@ const getFaces = async (peopleId: string) => {
 
 const setFaces = async (body: any) => {
     try {
+        const options = await getRequestHeader()
         const data = new FormData();
-        console.log('==body.image==', body.image);
         data.append("image", body.image);
         data.append("peopleId", body.peopleId);
         data.append("clientId", body.clientId);
         data.append("collection", body.collection);
         data.append("bucket", body.bucket);
-        // return await axios.post(endpoints.FACES_ENDPOINT, data, {headers: { "Content-Type": "multipart/form-data" }});
-        return await fetch(endpoints.FACES_ENDPOINT, { method: 'POST', headers: { "Content-Type": "multipart/form-data" }, body: data });
+        return await fetch(endpoints.FACES_ENDPOINT, { method: 'POST', headers: { "Content-Type": "multipart/form-data", "Authorization": options['Authorization'] }, body: data });
     } catch (err: any) {
         console.log(err);
     }
@@ -88,7 +111,7 @@ const setFaces = async (body: any) => {
 const removeFaces = async (body: any) => {
     try {
         const options: AxiosRequestConfig<any> = { 
-            headers: { "Content-Type": "application/json;charset=utf-8" },
+            headers: await getRequestHeader(),
             data: body
         };
         return await axios.delete(`${endpoints.FACES_ENDPOINT}/${Date.now()}`, options);
@@ -101,7 +124,7 @@ const removeFaces = async (body: any) => {
 const getRecords = async (clientId: string | null) => {
     try {
         const options: AxiosRequestConfig<any> = { 
-            headers: { "Content-Type": "application/json;charset=utf-8" },
+            headers: await getRequestHeader()
         };
         return await axios.get(`${endpoints.ANALYSIS_ENDPOINT}/records/${clientId}`, options);
     } catch (err: any) {
@@ -113,7 +136,7 @@ const getRecords = async (clientId: string | null) => {
 const getRecord = async (recordId:string, clientId: string) => {
     try {
         const options: AxiosRequestConfig<any> = { 
-            headers: { "Content-Type": "application/json;charset=utf-8" },
+            headers: await getRequestHeader()
         };
         return await axios.get(`${endpoints.ANALYSIS_ENDPOINT}/record/${recordId}/${clientId}`, options);
     } catch (err: any) {
@@ -125,7 +148,7 @@ const getRecord = async (recordId:string, clientId: string) => {
 const removeRecord = async (recordId: string) => {
     try {
         const options: AxiosRequestConfig<any> = { 
-            headers: { "Content-Type": "application/json;charset=utf-8" }
+            headers: await getRequestHeader()
         };
         return await axios.delete(`${endpoints.ANALYSIS_ENDPOINT}/record/${recordId}`, options);
     } catch (err: any) {
@@ -137,7 +160,7 @@ const removeRecord = async (recordId: string) => {
 const getReports = async (clientId: string | null, deviceId: string, startDate: string) => {
     try {
         const options: AxiosRequestConfig<any> = { 
-            headers: { "Content-Type": "application/json;charset=utf-8" },
+            headers: await getRequestHeader()
         };
         return await axios.get(`${endpoints.REPORTS_ENDPOINT}/${clientId}/${deviceId}/${startDate}`, options);
     } catch (err: any) {
@@ -148,7 +171,10 @@ const getReports = async (clientId: string | null, deviceId: string, startDate: 
 
 const requestSupport = async (body: any) => {
     try {
-        return await axios.post(`${endpoints.SUPPORT_ENDPOINT}?userId=${body.userId}`, body);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.post(`${endpoints.SUPPORT_ENDPOINT}?userId=${body.userId}`, body, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -156,7 +182,10 @@ const requestSupport = async (body: any) => {
 
 const getClients = async () => {
     try {
-        return await axios.get(`${endpoints.CLIENTS_ENDPOINT}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.CLIENTS_ENDPOINT}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -165,7 +194,10 @@ const getClients = async () => {
 
 const getClientByUser = async (userId: string) => {
     try {
-        return await axios.get(`${endpoints.CLIENTS_ENDPOINT}/${userId}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.CLIENTS_ENDPOINT}/${userId}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -174,10 +206,13 @@ const getClientByUser = async (userId: string) => {
 
 const setClients = async (update: boolean, body: any) => {
     try {
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
         if (update)
-            return await axios.put(`${endpoints.CLIENTS_ENDPOINT}`, body);
+            return await axios.put(`${endpoints.CLIENTS_ENDPOINT}`, body, options);
         else 
-            return await axios.post(`${endpoints.CLIENTS_ENDPOINT}`, body);
+            return await axios.post(`${endpoints.CLIENTS_ENDPOINT}`, body, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -185,7 +220,10 @@ const setClients = async (update: boolean, body: any) => {
 
 const removeClients = async (id: string | null) => {
     try {
-        return await axios.delete(`${endpoints.CLIENTS_ENDPOINT}/${id}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.delete(`${endpoints.CLIENTS_ENDPOINT}/${id}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -193,7 +231,10 @@ const removeClients = async (id: string | null) => {
 
 const getUsers = async () => {
     try {
-        return await axios.get(`${endpoints.USERS_ENDPOINT}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.USERS_ENDPOINT}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -202,7 +243,10 @@ const getUsers = async () => {
 
 const deleteUsers = async (username: string) => {
     try {
-        return await axios.post(`${endpoints.USERS_ENDPOINT}/${username}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.post(`${endpoints.USERS_ENDPOINT}/${username}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -210,7 +254,10 @@ const deleteUsers = async (username: string) => {
 
 const getDevices = async () => {
     try {
-        return await axios.get(`${endpoints.DEVICES_ENDPOINT}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.DEVICES_ENDPOINT}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -219,7 +266,10 @@ const getDevices = async () => {
 
 const getDevicesByClient = async (clientId: string | null) => {
     try {
-        return await axios.get(`${endpoints.DEVICES_ENDPOINT}/${clientId}`);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.get(`${endpoints.DEVICES_ENDPOINT}/${clientId}`, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -228,7 +278,10 @@ const getDevicesByClient = async (clientId: string | null) => {
 
 const postDevices = async (body: any) => {
     try {
-        return await axios.post(`${endpoints.DEVICES_ENDPOINT}`, body);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.post(`${endpoints.DEVICES_ENDPOINT}`, body, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -237,7 +290,10 @@ const postDevices = async (body: any) => {
 
 const putDevices = async (body: any) => {
     try {
-        return await axios.put(`${endpoints.DEVICES_ENDPOINT}/${body.id}`, body);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.put(`${endpoints.DEVICES_ENDPOINT}/${body.id}`, body, options);
     } catch (err: any) {
         console.log(err);
     }
@@ -246,7 +302,10 @@ const putDevices = async (body: any) => {
 
 const deleteDevices = async (body: any) => {
     try {
-        return await axios.post(`${endpoints.DEVICES_ENDPOINT}/delete/${body.id}`, body);
+        const options: AxiosRequestConfig<any> = { 
+            headers: await getRequestHeader()
+        };
+        return await axios.post(`${endpoints.DEVICES_ENDPOINT}/delete/${body.id}`, body, options);
     } catch (err: any) {
         console.log(err);
     }
